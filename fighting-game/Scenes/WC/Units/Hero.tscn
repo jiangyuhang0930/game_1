@@ -1,0 +1,13 @@
+[gd_scene format=3 uid="uid://c8185knhexkbj"]
+
+[ext_resource type="PackedScene" uid="uid://dbdwcfwim23l2" path="res://Scenes/WC/Units/Unit.tscn" id="1_q0ktm"]
+[ext_resource type="Script" uid="uid://vaa3wcqk555" path="res://Scripts/WC/Units/Hero.gd" id="2_s3b7s"]
+[ext_resource type="SpriteFrames" uid="uid://bs4f1ymumpelh" path="res://Resources/WC/Animations/Knight/Knight.tres" id="3_gbnob"]
+
+[node name="Unit" unique_id=638368485 instance=ExtResource("1_q0ktm")]
+script = ExtResource("2_s3b7s")
+
+[node name="AnimatedSprite2D" parent="." index="0" unique_id=1452732473]
+position = Vector2(6, -65)
+sprite_frames = ExtResource("3_gbnob")
+animation = &"idle"

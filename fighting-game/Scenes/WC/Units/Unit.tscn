@@ -1,0 +1,14 @@
+[gd_scene format=3 uid="uid://dbdwcfwim23l2"]
+
+[ext_resource type="Script" uid="uid://3lpqnnl8y36o" path="res://Scripts/WC/Units/Unit.gd" id="1_bnykf"]
+
+[node name="Unit" type="Node2D" unique_id=638368485]
+script = ExtResource("1_bnykf")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1452732473]
+
+[node name="Effects" type="Node2D" parent="." unique_id=1694929441]
+
+[node name="UI" type="Node2D" parent="." unique_id=2041348403]
+
+[node name="Marker2D" type="Marker2D" parent="." unique_id=1064405911]

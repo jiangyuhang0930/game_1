@@ -1,0 +1,11 @@
+[gd_scene format=3 uid="uid://orn4t1b70m5p"]
+
+[ext_resource type="Script" uid="uid://dfo2e343sydn7" path="res://Scripts/main.gd" id="1_1r6ip"]
+
+[node name="Main" type="Node2D" unique_id=1826594402]
+script = ExtResource("1_1r6ip")
+
+[node name="Title" type="Label" parent="." unique_id=248888701]
+offset_right = 40.0
+offset_bottom = 23.0
+text = "WarChess"
