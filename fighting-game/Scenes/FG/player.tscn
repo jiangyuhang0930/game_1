@@ -120,7 +120,7 @@ _data = {
 }
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ubqdv"]
-size = Vector2(480.7884, 152.75592)
+size = Vector2(458.23386, 152.75592)
 
 [sub_resource type="Animation" id="Animation_nfmbf"]
 length = 0.001
@@ -165,7 +165,7 @@ script = ExtResource("1_tai8l")
 speed = 30.0
 jump_power = 70.0
 camera = NodePath("Camera2D")
-sword_slash = NodePath("SwordSlash")
+sword_slash = NodePath("SwordSlashRight")
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=986295408]
 position = Vector2(268, 171)
@@ -188,24 +188,96 @@ texture = ExtResource("1_k3ug5")
 [node name="AnimationPlayer" type="AnimationPlayer" parent="PlayerAnimator" unique_id=97883533]
 libraries/ = SubResource("AnimationLibrary_gymyn")
 
-[node name="SwordSlash" type="Sprite2D" parent="." unique_id=256171624]
+[node name="SwordSlashRight" type="Sprite2D" parent="." unique_id=256171624]
+process_mode = 4
 auto_translate_mode = 1
 visible = false
-position = Vector2(265.00006, 195)
+position = Vector2(437, 193.99998)
 scale = Vector2(0.5554545, 0.6349999)
 texture = ExtResource("15_akfvt")
 region_enabled = true
-region_rect = Rect2(-567.21313, 0, 1117.2131, 400)
+region_rect = Rect2(37.276, 0, 513.099, 400)
 
-[node name="Area2D" type="Area2D" parent="SwordSlash" unique_id=296397781]
+[node name="Area2D" type="Area2D" parent="SwordSlashRight" unique_id=296397781]
 position = Vector2(-787.7888, -297.63782)
 scale = Vector2(1.8151815, 1.5748032)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="SwordSlash/Area2D" unique_id=915967305]
-position = Vector2(613.51874, 198.00003)
+[node name="CollisionShape2D" type="CollisionShape2D" parent="SwordSlashRight/Area2D" unique_id=915967305]
+position = Vector2(441.93454, 200.00002)
 scale = Vector2(0.55090916, 0.635)
 shape = SubResource("RectangleShape2D_ubqdv")
 
-[node name="AnimationPlayer" type="AnimationPlayer" parent="SwordSlash" unique_id=776052480]
+[node name="AnimationPlayer" type="AnimationPlayer" parent="SwordSlashRight" unique_id=776052480]
+libraries/ = SubResource("AnimationLibrary_d2srl")
+autoplay = &"slash"
+
+[node name="SwordSlashUp" type="Sprite2D" parent="." unique_id=1138498537]
+process_mode = 4
+auto_translate_mode = 1
+visible = false
+position = Vector2(250, -37.000008)
+rotation = -1.5707964
+scale = Vector2(0.5554545, 0.6349999)
+texture = ExtResource("15_akfvt")
+region_enabled = true
+region_rect = Rect2(37.276, 0, 513.099, 400)
+
+[node name="Area2D" type="Area2D" parent="SwordSlashUp" unique_id=165725382]
+position = Vector2(-787.7888, -297.63782)
+scale = Vector2(1.8151815, 1.5748032)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="SwordSlashUp/Area2D" unique_id=874096797]
+position = Vector2(433.00818, 195.00002)
+scale = Vector2(0.55090916, 0.635)
+shape = SubResource("RectangleShape2D_ubqdv")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="SwordSlashUp" unique_id=1117793065]
+libraries/ = SubResource("AnimationLibrary_d2srl")
+autoplay = &"slash"
+
+[node name="SwordSlashDown" type="Sprite2D" parent="." unique_id=1468611655]
+process_mode = 4
+auto_translate_mode = 1
+visible = false
+position = Vector2(255.99998, 380)
+rotation = -4.712389
+scale = Vector2(0.5554545, 0.6349999)
+texture = ExtResource("15_akfvt")
+region_enabled = true
+region_rect = Rect2(37.276, 0, 513.099, 400)
+
+[node name="Area2D" type="Area2D" parent="SwordSlashDown" unique_id=391024330]
+position = Vector2(-787.7888, -297.63782)
+scale = Vector2(1.8151815, 1.5748032)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="SwordSlashDown/Area2D" unique_id=62642278]
+position = Vector2(432.74643, 195.99998)
+scale = Vector2(0.5509092, 0.63500005)
+shape = SubResource("RectangleShape2D_ubqdv")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="SwordSlashDown" unique_id=2123729034]
+libraries/ = SubResource("AnimationLibrary_d2srl")
+autoplay = &"slash"
+
+[node name="SwordSlashLeft" type="Sprite2D" parent="." unique_id=418366592]
+process_mode = 4
+auto_translate_mode = 1
+visible = false
+position = Vector2(58, 194)
+scale = Vector2(-0.555, 0.635)
+texture = ExtResource("15_akfvt")
+region_enabled = true
+region_rect = Rect2(37.276, 0, 513.099, 400)
+
+[node name="Area2D" type="Area2D" parent="SwordSlashLeft" unique_id=230655201]
+position = Vector2(-787.7888, -297.63782)
+scale = Vector2(1.8151815, 1.5748032)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="SwordSlashLeft/Area2D" unique_id=455333654]
+position = Vector2(436.97794, 196.00002)
+scale = Vector2(0.55090916, 0.635)
+shape = SubResource("RectangleShape2D_ubqdv")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="SwordSlashLeft" unique_id=1337912432]
 libraries/ = SubResource("AnimationLibrary_d2srl")
 autoplay = &"slash"

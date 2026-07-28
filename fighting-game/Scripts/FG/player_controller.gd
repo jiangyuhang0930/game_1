@@ -20,6 +20,8 @@ func _input(event):
 	if event.is_action_pressed("attack"):
 		is_attacking = true
 		sword_slash.visible = true
+		sword_slash.process_mode = Node.PROCESS_MODE_INHERIT
+		
 		
 	if event.is_action_pressed("dash"):
 		print("dash")

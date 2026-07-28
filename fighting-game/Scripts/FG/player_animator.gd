@@ -23,6 +23,7 @@ func _process(delta):
 		await animation_player.animation_finished
 		player_controller.is_attacking = false
 		player_controller.sword_slash.visible = false
+		player_controller.sword_slash.process_mode = Node.PROCESS_MODE_DISABLED
 
 	##plays the movement animation
 	if abs(player_controller.velocity.x) > 0.0:
