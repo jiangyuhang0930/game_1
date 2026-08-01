@@ -13,9 +13,14 @@ var height: int = 0
 # Top-left cell coordinate in the TileMap.
 var origin: Vector2i
 
+# Walkable map bounds.
+var min_walkable_x: int
+var max_walkable_x: int
+var min_walkable_y: int
+var max_walkable_y: int
+
 # 2D array storing all CellData instances.
 var cells: Array[Array] = []
-
 
 # ------------------------------------------------------------------
 # TileMap References
@@ -123,7 +128,9 @@ func _build_grid() -> void:
 	
 	# Load object data from TileMap.
 	_load_objects()
-
+	
+	# Walkable X: -9 ~ 8  Walkable Y: -5 ~ 4
+	_calculate_walkable_bounds()
 
 func _create_cells() -> void:
 
@@ -197,3 +204,23 @@ func _load_objects() -> void:
 		# object_count += 1
 
 	# print("Loaded ", object_count, " objects.")
+
+func _calculate_walkable_bounds() -> void:
+
+	min_walkable_x = 999999
+	max_walkable_x = -999999
+	min_walkable_y = 999999
+	max_walkable_y = -999999
+
+	for map_y in range(origin.y, origin.y + height):
+		for map_x in range(origin.x, origin.x + width):
+
+			var map_position := Vector2i(map_x, map_y)
+
+			if not can_select(map_position):
+				continue
+
+			min_walkable_x = min(min_walkable_x, map_x)
+			max_walkable_x = max(max_walkable_x, map_x)
+			min_walkable_y = min(min_walkable_y, map_y)
+			max_walkable_y = max(max_walkable_y, map_y)

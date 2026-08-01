@@ -1,3 +1,3 @@
-extends "res://Scripts/WC/Units/unit.gd"
+extends "res://Scripts/WC/Units/Unit.gd"
 
 class_name Hero
