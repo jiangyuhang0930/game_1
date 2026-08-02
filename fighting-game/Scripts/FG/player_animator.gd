@@ -9,21 +9,21 @@ func _process(delta):
 	if not player_controller.is_attacking:
 		if player_controller.direction == 1:
 			sprite.flip_h = false
-			for child in player_controller.get_children():
-				if child is Sprite2D:
-					child.flip_h = false
+			#for child in player_controller.get_children():
+				#if child is Sprite2D:
+					#child.flip_h = false
 		elif player_controller.direction == -1:
 			sprite.flip_h = true
-			for child in player_controller.get_children():
-				if child is Sprite2D:
-					child.flip_h = true
+			#for child in player_controller.get_children():
+				#if child is Sprite2D:
+					#child.flip_h = true
 		
 	if player_controller.is_attacking:
 		animation_player.play("knight_attack")
 		await animation_player.animation_finished
 		player_controller.is_attacking = false
-		player_controller.sword_slash.visible = false
-		player_controller.sword_slash.process_mode = Node.PROCESS_MODE_DISABLED
+		player_controller.curr_sword_slash.visible = false
+		player_controller.curr_sword_slash.process_mode = Node.PROCESS_MODE_DISABLED
 
 	##plays the movement animation
 	if abs(player_controller.velocity.x) > 0.0:
