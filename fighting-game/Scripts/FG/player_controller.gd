@@ -38,8 +38,6 @@ func _input(event):
 		curr_sword_slash.visible = true
 		curr_sword_slash.process_mode = Node.PROCESS_MODE_INHERIT
 		
-	if event.is_action_pressed("switch_wc"):
-		get_tree().change_scene_to_file("res://Scenes/WC/Battle/battle.tscn")
 		
 	if event.is_action_pressed("dash"):
 		print("dash")
