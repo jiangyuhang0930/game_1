@@ -10,8 +10,36 @@ extends Node2D
 @onready var selection: Sprite2D = $Overlay/Selection
 var current_map_position: Vector2i = Vector2i(-999999, -999999)
 
-@onready var hero: Hero = $Units/Hero
 @onready var deployment_manager: DeploymentManager = $Managers/DeploymentManager
+
+# Hero scene used to create new units.
+@export var hero_scene: PackedScene
+
+
+# ------------------------------------------------------------------
+# Hero Creation
+# ------------------------------------------------------------------
+
+# Create and initialize a hero.
+func create_hero(start_position: Vector2i) -> Hero:
+
+	var hero := hero_scene.instantiate() as Hero
+
+	# Add to the scene.
+	$Units.add_child(hero)
+
+	# Initialize hero.
+	hero.set_grid_data(grid_data)
+	hero.set_map_position(start_position)
+
+	# Register hero.
+	deployment_manager.add_hero(hero)
+
+	# Listen for click events.
+	hero.clicked.connect(_on_hero_clicked)
+
+	return hero
+
 
 func _ready() -> void:
 	Input.mouse_mode = Input.MOUSE_MODE_HIDDEN
@@ -25,14 +53,13 @@ func _ready() -> void:
 	
 	# Initialize deployment system.
 	deployment_manager.initialize(grid_data)
+	
+	# ------------------------------------------------------------------
+	# Create initial heroes.
+	# ------------------------------------------------------------------
 
-	# Register hero.
-	hero.set_grid_data(grid_data)
-	hero.set_map_position(Vector2i(-7, 5))
-	deployment_manager.add_hero(hero)
-
-	# Listen for hero click.
-	hero.clicked.connect(_on_hero_clicked)
+	create_hero(Vector2i(-7, 5))
+	create_hero(Vector2i(-9, 4))
 	
 
 func _process(_delta: float) -> void:
@@ -80,24 +107,21 @@ func _unhandled_input(event: InputEvent) -> void:
 	var map_position := ground_layer.local_to_map(mouse_world)
 	map_position.y += 1
 
-	# Check whether the target cell is inside the deployment area.
-	var can_deploy := (
-		map_position.x >= -9
-		and map_position.x <= -6
-		and map_position.y >= 2
-		and map_position.y <= 5
-	)
+	# Check whether the target cell is valid for deployment.
+	var can_deploy := deployment_manager.is_deployment_cell(map_position)
 
-	hero.end_drag()
+	# Get the current dragging unit.
+	var unit := deployment_manager.get_selected_unit()
+
+	unit.end_drag()
 
 	if can_deploy:
-		# Place the hero on the selected cell.
-		hero.set_map_position(map_position)
+	# Deploy to the selected cell.
+		unit.set_map_position(map_position)
 
 	else:
-
-		# Invalid position. Return to the previous cell.
-		hero.set_map_position(hero.previous_map_position)
+	# Invalid deployment. Return to the previous position.
+		unit.set_map_position(unit.previous_map_position)
 
 	deployment_manager.stop_drag()
 

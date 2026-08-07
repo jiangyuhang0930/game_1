@@ -31,7 +31,7 @@ var previous_map_position: Vector2i
 func _ready() -> void:
 	play_animation("idle")
 	click_area.input_event.connect(_on_click_area_input_event)
-	print("ClickArea connected:", click_area)
+	# print("ClickArea connected:", click_area)
 	
 func initialize(grid: GridData, start_position: Vector2i) -> void:
 	grid_data = grid

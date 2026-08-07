@@ -7,8 +7,8 @@ var grid_data: GridData
 ## All heroes in battle.
 var heroes: Array[Hero] = []
 
-## Currently selected hero.
-var selected_hero: Hero = null
+## Currently selected unit.
+var selected_unit: Unit = null
 
 var is_dragging: bool = false
 
@@ -19,7 +19,6 @@ func initialize(grid: GridData) -> void:
 func add_hero(hero: Hero) -> void:
 	if heroes.has(hero):
 		return
-
 	heroes.append(hero)
 
 
@@ -28,21 +27,25 @@ func get_heroes() -> Array[Hero]:
 
 
 func is_deployment_cell(map_position: Vector2i) -> bool:
-
 	return (
 		map_position.x >= -9
 		and map_position.x <= -6
-		and map_position.y >= 1
-		and map_position.y <= 4
+		and map_position.y >= 2
+		and map_position.y <= 5
 	)
 
-func start_drag(hero: Hero) -> void:
-
-	selected_hero = hero
+# Start dragging a unit.
+func start_drag(unit: Unit) -> void:
+	selected_unit = unit
 	is_dragging = true
 
 
+# Stop dragging the current unit.
 func stop_drag() -> void:
-
-	selected_hero = null
+	selected_unit = null
 	is_dragging = false
+
+
+# Get the currently selected unit.
+func get_selected_unit() -> Unit:
+	return selected_unit

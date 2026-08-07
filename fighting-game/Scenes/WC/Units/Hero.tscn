@@ -8,6 +8,7 @@
 size = Vector2(28, 38)
 
 [node name="Unit" unique_id=638368485 instance=ExtResource("1_q0ktm")]
+scale = Vector2(0.4, 0.4)
 script = ExtResource("2_s3b7s")
 
 [node name="AnimatedSprite2D" parent="." index="0" unique_id=1452732473]
