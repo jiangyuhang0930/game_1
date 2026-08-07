@@ -9,11 +9,13 @@ func _process(delta):
 	if not player_controller.is_attacking:
 		if player_controller.direction == 1:
 			sprite.flip_h = false
+			player_controller.facing_right = true
 			#for child in player_controller.get_children():
 				#if child is Sprite2D:
 					#child.flip_h = false
 		elif player_controller.direction == -1:
 			sprite.flip_h = true
+			player_controller.facing_right = false
 			#for child in player_controller.get_children():
 				#if child is Sprite2D:
 					#child.flip_h = true

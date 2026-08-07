@@ -14,30 +14,16 @@ var jump_charges = 1
 var curr_sword_slash
 
 var is_attacking = false
+var facing_right = true
 
 func _input(event):
 	# Handle jump.
 	if event.is_action_pressed("jump") and (is_on_floor() or jump_charges > 0):
 		jump_charges -= 1
 		velocity.y = jump_power * jump_multiplier
-
-	if event.is_action_pressed("attack"):
-		is_attacking = true
-		print(event.is_action_pressed("up"))
-		if Input.get_axis("move_left", "move_right") == 1:
-			curr_sword_slash = sword_slash_right
-		elif Input.get_axis("move_left", "move_right") == -1:
-			curr_sword_slash = sword_slash_left
-		elif event.is_action_pressed("up"):
-			print(1)
-			curr_sword_slash = sword_slash_up
-		elif event.is_action_pressed("down"):
-			curr_sword_slash = sword_slash_down
-		else:
-			curr_sword_slash = sword_slash_right
-		curr_sword_slash.visible = true
-		curr_sword_slash.process_mode = Node.PROCESS_MODE_INHERIT
-		
+	
+	if event.is_action_pressed("switch_wc"):
+		get_tree().change_scene_to_file("res://Scenes/WC/Battle/battle.tscn")
 		
 	if event.is_action_pressed("dash"):
 		print("dash")
@@ -59,3 +45,23 @@ func _physics_process(delta: float) -> void:
 		velocity.x = move_toward(velocity.x, 0, speed * speed_multiplier)
 
 	move_and_slide()
+	
+	
+	if Input.is_action_pressed("attack") and !is_attacking:
+		is_attacking = true
+		if Input.is_action_pressed("up"):
+			curr_sword_slash = sword_slash_up
+		elif Input.is_action_pressed("down") and not is_on_floor():
+			curr_sword_slash = sword_slash_down
+		elif Input.get_axis("move_left", "move_right") == 1:
+			curr_sword_slash = sword_slash_right
+		elif Input.get_axis("move_left", "move_right") == -1:
+			curr_sword_slash = sword_slash_left
+		else:
+
+			if !facing_right:
+				curr_sword_slash = sword_slash_left
+			else:
+				curr_sword_slash = sword_slash_right
+		curr_sword_slash.visible = true
+		curr_sword_slash.process_mode = Node.PROCESS_MODE_INHERIT
