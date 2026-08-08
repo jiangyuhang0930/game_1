@@ -33,11 +33,15 @@ func create_hero(start_position: Vector2i) -> Hero:
 	hero.set_map_position(start_position)
 
 	# Register hero.
-	deployment_manager.add_hero(hero)
+	var added := deployment_manager.add_hero(hero)
+
+	# Cancel hero creation if the target cell is already occupied.
+	if not added:
+		hero.queue_free()
+		return null
 
 	# Listen for click events.
 	hero.clicked.connect(_on_hero_clicked)
-
 	return hero
 
 
@@ -58,8 +62,10 @@ func _ready() -> void:
 	# Create initial heroes.
 	# ------------------------------------------------------------------
 
-	create_hero(Vector2i(-7, 5))
-	create_hero(Vector2i(-9, 4))
+	create_hero(Vector2i(-7, 4))
+	create_hero(Vector2i(-9, 5))
+	# create_hero(Vector2i(-9, 5))
+	# create_hero(Vector2i(-7, 4))
 	
 
 func _process(_delta: float) -> void:
@@ -112,15 +118,28 @@ func _unhandled_input(event: InputEvent) -> void:
 
 	# Get the current dragging unit.
 	var unit := deployment_manager.get_selected_unit()
+	# Make sure a unit is actually being dragged.
+	if unit == null:
+		return
 
 	unit.end_drag()
 
 	if can_deploy:
-	# Deploy to the selected cell.
-		unit.set_map_position(map_position)
+
+		# Try to move the unit to the target cell.
+		var moved := deployment_manager.move_unit(
+			unit,
+			map_position
+		)
+
+		# Return to the previous position if the target cell is blocked.
+		if not moved:
+			unit.set_map_position(unit.previous_map_position)
 
 	else:
-	# Invalid deployment. Return to the previous position.
+
+		# Return to the previous position if the target is outside
+		# the deployment area.
 		unit.set_map_position(unit.previous_map_position)
 
 	deployment_manager.stop_drag()

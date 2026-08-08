@@ -94,9 +94,62 @@ func can_select(map_position: Vector2i) -> bool:
 	if not has_cell(map_position):
 		return false
 
-	var cell := get_cell_from_map(map_position)
+	var cell: CellData = get_cell_from_map(map_position)
 
-	return cell.object == null
+	# A blocked cell cannot be selected.
+	return not cell.obstacle
+	
+	
+# Check whether a cell is currently blocked.
+func is_obstacle(map_position: Vector2i) -> bool:
+
+	if not has_cell(map_position):
+		return true
+
+	return get_cell_from_map(map_position).obstacle
+
+
+# Mark a cell as occupied by a unit.
+func occupy_cell(map_position: Vector2i, unit: Unit) -> bool:
+
+	if not has_cell(map_position):
+		return false
+
+	var cell: CellData = get_cell_from_map(map_position)
+
+	# Do not allow a unit to occupy an already blocked cell.
+	if cell.obstacle:
+		return false
+
+	cell.unit = unit
+	cell.obstacle = true
+
+	return true
+
+
+# Release a unit from its current cell.
+func release_cell(map_position: Vector2i) -> void:
+
+	if not has_cell(map_position):
+		return
+
+	var cell: CellData = get_cell_from_map(map_position)
+
+	cell.unit = null
+
+	# Keep the cell blocked if it contains a map object.
+	cell.obstacle = cell.object != null
+	
+
+# Check whether a unit can occupy a cell.
+func can_occupy_cell(map_position: Vector2i) -> bool:
+
+	if not has_cell(map_position):
+		return false
+
+	var cell: CellData = get_cell_from_map(map_position)
+
+	return not cell.obstacle
 	
 	
 func map_to_world(map_position: Vector2i) -> Vector2:
@@ -186,24 +239,24 @@ func _load_terrain() -> void:
 	
 
 func _load_objects() -> void:
-
-	# var object_count := 0
-
+	# Load all cells occupied by the obstacle layer.
 	for map_position in obstacle_layer.get_used_cells():
 
 		var row := _map_to_row(map_position.y)
 		var col := _map_to_col(map_position.x)
 
-		# Check for duplicate objects.
-		if cells[row][col].object != null:
+		var cell: CellData = cells[row][col]
+
+		# Mark this cell as blocked.
+		cell.obstacle = true
+
+		# Store the object data for this obstacle.
+		if cell.object != null:
 			push_error("Multiple objects found on the same cell.")
 			continue
 
-		cells[row][col].object = GeneralObjectData.new()
-
-		# object_count += 1
-
-	# print("Loaded ", object_count, " objects.")
+		cell.object = GeneralObjectData.new()
+		
 
 func _calculate_walkable_bounds() -> void:
 

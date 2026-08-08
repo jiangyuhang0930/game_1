@@ -5,6 +5,9 @@ signal clicked(unit: Unit)
 ## Tile position on the map.
 var map_position: Vector2i
 
+## Grid cell currently occupied by this unit.
+var occupied_map_position: Vector2i
+
 ## Reference to the GridData.
 var grid_data: GridData
 
@@ -42,6 +45,13 @@ func set_grid_data(grid: GridData) -> void:
 
 func set_map_position(new_position: Vector2i) -> void:
 	map_position = new_position
+
+	# The unit occupies the cell one row below its visual position.
+	occupied_map_position = Vector2i(
+		new_position.x,
+		new_position.y - 1
+	)
+
 	update_world_position()
 	
 func play_animation(animation_name: String) -> void:

@@ -16,10 +16,55 @@ func initialize(grid: GridData) -> void:
 	grid_data = grid
 
 
-func add_hero(hero: Hero) -> void:
+func add_hero(hero: Hero) -> bool:
+
 	if heroes.has(hero):
-		return
+		return true
+
+	# Try to occupy the cell corresponding to the unit's position.
+	var occupied := grid_data.occupy_cell(
+		hero.occupied_map_position,
+		hero
+	)
+
+	# Do not register the hero if its starting cell is blocked.
+	if not occupied:
+		push_error("Cannot add hero to blocked cell: " + str(hero.occupied_map_position))
+		return false
+
 	heroes.append(hero)
+	return true
+
+
+# Move a unit from its current cell to a new cell.
+func move_unit(unit: Unit, new_map_position: Vector2i) -> bool:
+
+	# The unit's logical occupied cell.
+	var new_occupied_position := Vector2i(
+		new_map_position.x,
+		new_map_position.y - 1
+	)
+
+	# Do not allow movement onto a blocked cell.
+	if not grid_data.can_occupy_cell(new_occupied_position):
+		return false
+
+	# Release the old occupied cell.
+	grid_data.release_cell(unit.occupied_map_position)
+
+	# Occupy the new cell.
+	var occupied := grid_data.occupy_cell(
+		new_occupied_position,
+		unit
+	)
+
+	if not occupied:
+		return false
+
+	# Update the unit's visual position.
+	unit.set_map_position(new_map_position)
+
+	return true
 
 
 func get_heroes() -> Array[Hero]:

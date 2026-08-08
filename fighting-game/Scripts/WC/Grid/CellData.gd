@@ -14,3 +14,6 @@ var object: ObjectData
 
 # Unit currently standing on this cell.
 var unit
+
+# Whether this cell is currently blocked.
+var obstacle: bool = false
