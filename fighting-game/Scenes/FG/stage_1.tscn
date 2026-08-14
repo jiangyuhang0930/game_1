@@ -4,6 +4,7 @@
 [ext_resource type="PackedScene" uid="uid://ctgxpfuyyoyfn" path="res://Scenes/FG/player.tscn" id="2_hh5uf"]
 [ext_resource type="Texture2D" uid="uid://b2418djw0h16i" path="res://Art/FG/enviornment/pillar.png" id="3_us22l"]
 [ext_resource type="Texture2D" uid="uid://x0vk8bm83fb3" path="res://Art/FG/enviornment/pillar_base_t.png" id="4_ow18i"]
+[ext_resource type="PackedScene" uid="uid://bs3v4t3xi47pf" path="res://Scenes/FG/enemy.tscn" id="5_qrwsy"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ial8x"]
 size = Vector2(6047.25, 513.5)
@@ -194,3 +195,6 @@ texture = ExtResource("4_ow18i")
 
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Pillar2" unique_id=1191322932]
 polygon = PackedVector2Array(-387, 246, 4, 245, -64, 159, -73, -1002, -11, -1076, -365, -1076, -295, -1000, -294, 159)
+
+[node name="Enemy" parent="." unique_id=1138559623 instance=ExtResource("5_qrwsy")]
+position = Vector2(3161, 414)

@@ -1,0 +1,79 @@
+[gd_scene format=3 uid="uid://bs3v4t3xi47pf"]
+
+[ext_resource type="Script" uid="uid://ddahrq08gd8k3" path="res://Scripts/FG/enemy.gd" id="1_qtr51"]
+[ext_resource type="Texture2D" uid="uid://bac3wegwt66xo" path="res://Art/FG/enemy/_Idle.png" id="2_2685o"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_byh2l"]
+size = Vector2(132, 233)
+
+[sub_resource type="Animation" id="Animation_2685o"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:region_rect")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Rect2(0, 0, 120, 80)]
+}
+
+[sub_resource type="Animation" id="Animation_3ab2n"]
+resource_name = "idle"
+length = 0.8
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:region_rect")
+tracks/0/interp = 0
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.07871893, 0.16666667, 0.23333333, 0.33333334, 0.4, 0.46666667, 0.53333336, 0.6333333, 0.73333335),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 0,
+"values": [Rect2(0, 0, 120, 80), Rect2(120, 0, 120, 80), Rect2(240, 0, 120, 80), Rect2(360, 0, 120, 80), Rect2(480, 0, 120, 80), Rect2(600, 0, 120, 80), Rect2(720, 0, 120, 80), Rect2(840, 0, 120, 80), Rect2(960, 0, 120, 80), Rect2(1080, 0, 120, 80)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_d2rol"]
+_data = {
+&"RESET": SubResource("Animation_2685o"),
+&"idle": SubResource("Animation_3ab2n")
+}
+
+[node name="Enemy" type="Node2D" unique_id=1138559623]
+script = ExtResource("1_qtr51")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1519903756]
+texture_filter = 1
+position = Vector2(99, -13)
+scale = Vector2(5.808333, 6.1000004)
+texture = ExtResource("2_2685o")
+flip_h = true
+region_enabled = true
+region_rect = Rect2(0, 0, 120, 80)
+
+[node name="Area2D" type="Area2D" parent="." unique_id=6342025]
+position = Vector2(-7.6293945e-06, 9.536743e-07)
+scale = Vector2(1.0000001, 1)
+
+[node name="CollisionShape2D2" type="CollisionShape2D" parent="Area2D" unique_id=1709861388]
+position = Vector2(128.99998, 119)
+shape = SubResource("RectangleShape2D_byh2l")
+
+[node name="RigidBody2D" type="RigidBody2D" parent="." unique_id=900669150]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="RigidBody2D" unique_id=1829733210]
+position = Vector2(129, 119)
+scale = Vector2(1.0000001, 1)
+shape = SubResource("RectangleShape2D_byh2l")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=137587204]
+libraries/ = SubResource("AnimationLibrary_d2rol")
+autoplay = &"idle"
+
+[connection signal="area_entered" from="Area2D" to="." method="_on_area_2d_area_entered"]
+[connection signal="body_entered" from="Area2D" to="." method="_on_area_2d_body_entered"]

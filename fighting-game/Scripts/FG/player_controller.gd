@@ -1,5 +1,6 @@
 extends CharacterBody2D
 class_name PlayerController
+@export var health = 10
 @export var speed = 10.0
 @export var jump_power = 50.0
 @export var camera : Camera2D

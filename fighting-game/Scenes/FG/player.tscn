@@ -201,7 +201,7 @@ texture = ExtResource("15_akfvt")
 region_enabled = true
 region_rect = Rect2(37.276, 0, 513.099, 400)
 
-[node name="Area2D" type="Area2D" parent="SwordSlashRight" unique_id=296397781]
+[node name="Area2D" type="Area2D" parent="SwordSlashRight" unique_id=296397781 groups=["slash"]]
 position = Vector2(-787.7888, -297.63782)
 scale = Vector2(1.8151815, 1.5748032)
 
@@ -225,7 +225,7 @@ texture = ExtResource("15_akfvt")
 region_enabled = true
 region_rect = Rect2(37.276, 0, 513.099, 400)
 
-[node name="Area2D" type="Area2D" parent="SwordSlashUp" unique_id=165725382]
+[node name="Area2D" type="Area2D" parent="SwordSlashUp" unique_id=165725382 groups=["slash"]]
 position = Vector2(-787.7888, -297.63782)
 scale = Vector2(1.8151815, 1.5748032)
 
@@ -249,7 +249,7 @@ texture = ExtResource("15_akfvt")
 region_enabled = true
 region_rect = Rect2(37.276, 0, 513.099, 400)
 
-[node name="Area2D" type="Area2D" parent="SwordSlashDown" unique_id=391024330]
+[node name="Area2D" type="Area2D" parent="SwordSlashDown" unique_id=391024330 groups=["slash"]]
 position = Vector2(-787.7888, -297.63782)
 scale = Vector2(1.8151815, 1.5748032)
 
@@ -272,7 +272,7 @@ texture = ExtResource("15_akfvt")
 region_enabled = true
 region_rect = Rect2(37.276, 0, 513.099, 400)
 
-[node name="Area2D" type="Area2D" parent="SwordSlashLeft" unique_id=230655201]
+[node name="Area2D" type="Area2D" parent="SwordSlashLeft" unique_id=230655201 groups=["slash"]]
 position = Vector2(-787.7888, -297.63782)
 scale = Vector2(1.8151815, 1.5748032)
 
