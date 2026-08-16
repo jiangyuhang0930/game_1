@@ -67,6 +67,36 @@ func move_unit(unit: Unit, new_map_position: Vector2i) -> bool:
 	return true
 
 
+# Move a unit from its current occupied cell to a new occupied cell.
+func move_unit_to_occupied_cell(
+	unit: Unit,
+	target_occupied_position: Vector2i
+) -> bool:
+
+	# The target cell must be available.
+	if not grid_data.can_occupy_cell(target_occupied_position):
+		return false
+
+	# Release the unit's current occupied cell.
+	grid_data.release_cell(unit.occupied_map_position)
+
+	# Occupy the target cell.
+	var occupied := grid_data.occupy_cell(
+		target_occupied_position,
+		unit
+	)
+
+	if not occupied:
+		# Restore the original cell if something went wrong.
+		grid_data.occupy_cell(
+			unit.occupied_map_position,
+			unit
+		)
+		return false
+
+	return true
+
+
 func get_heroes() -> Array[Hero]:
 	return heroes
 

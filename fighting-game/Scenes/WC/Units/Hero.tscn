@@ -5,19 +5,22 @@
 [ext_resource type="SpriteFrames" uid="uid://bs4f1ymumpelh" path="res://Resources/WC/Animations/Knight/Knight.tres" id="3_gbnob"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_gbnob"]
-size = Vector2(28, 38)
+size = Vector2(28.000002, 38)
 
 [node name="Unit" unique_id=638368485 instance=ExtResource("1_q0ktm")]
 scale = Vector2(0.4, 0.4)
 script = ExtResource("2_s3b7s")
 
-[node name="AnimatedSprite2D" parent="." index="0" unique_id=1452732473]
-position = Vector2(6, -65)
+[node name="AnimatedSprite2D" parent="VisualRoot" parent_id_path=PackedInt32Array(1017908689) index="0" unique_id=1452732473]
+position = Vector2(1.533329, -65)
+scale = Vector2(0.9833333, 1)
 sprite_frames = ExtResource("3_gbnob")
 animation = &"idle"
+offset = Vector2(2, 0)
 
 [node name="ClickArea" type="Area2D" parent="." index="4" unique_id=2131387285]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="ClickArea" index="0" unique_id=6974044]
-position = Vector2(1, -44)
+position = Vector2(1.0000004, -43.99999)
+scale = Vector2(0.9999998, 0.9999998)
 shape = SubResource("RectangleShape2D_gbnob")

@@ -8,11 +8,17 @@ var map_position: Vector2i
 ## Grid cell currently occupied by this unit.
 var occupied_map_position: Vector2i
 
+## Maximum number of cells this unit can move.
+@export var move_range: int = 3
+
 ## Reference to the GridData.
 var grid_data: GridData
 
-## Animated sprite.
-@onready var sprite: AnimatedSprite2D = $AnimatedSprite2D
+## Animated sprite used to display the unit.
+@onready var sprite: AnimatedSprite2D = $VisualRoot/AnimatedSprite2D
+
+## Root node used as the visual pivot for the unit.
+@onready var visual_root: Node2D = $VisualRoot
 
 ## Effect root.
 @onready var effects: Node2D = $Effects
@@ -78,7 +84,64 @@ func begin_drag() -> void:
 func end_drag() -> void:
 	is_dragging = false
 
-func _process(delta: float) -> void:
+
+# Move the unit along a grid path.
+# Move the unit along a path of occupied grid cells.
+func move_along_path(path: Array[Vector2i]) -> void:
+
+	# Do nothing if there is no movement path.
+	if path.size() <= 1:
+		return
+
+	# Play the running animation.
+	play_animation("run")
+
+	# Move through each cell in the path.
+	for i in range(1, path.size()):
+
+		# Pathfinding uses the unit's occupied grid coordinates.
+		var target_occupied_position: Vector2i = path[i]
+
+		# Convert the occupied cell to the unit's visual map position.
+		var target_map_position := Vector2i(
+			target_occupied_position.x,
+			target_occupied_position.y + 1
+		)
+		
+		# Face the direction of horizontal movement.
+		if target_occupied_position.x > occupied_map_position.x:
+			visual_root.scale.x = abs(visual_root.scale.x)
+		elif target_occupied_position.x < occupied_map_position.x:
+			visual_root.scale.x = -abs(visual_root.scale.x)
+
+		# Convert the visual map position to world position.
+		var target_world_position := grid_data.map_to_world(
+			target_map_position
+		)
+
+		# Smoothly move the unit to the target cell.
+		var tween := create_tween()
+
+		tween.tween_property(
+			self,
+			"position",
+			target_world_position,
+			0.15
+		)
+
+		await tween.finished
+
+		# Update the unit's visual map position.
+		map_position = target_map_position
+
+		# Update the occupied grid position.
+		occupied_map_position = target_occupied_position
+
+	# Return to idle animation.
+	play_animation("idle")
+
+
+func _process(_delta: float) -> void:
 	if not is_dragging:
 		return
 
@@ -99,5 +162,9 @@ func _on_click_area_input_event(
 ) -> void:
 
 	if event.is_action_pressed("left_click"):
+
+		# Notify Battle that this unit was clicked.
 		clicked.emit(self)
-		
+
+		# Prevent the same click from being treated as a movement command.
+		get_viewport().set_input_as_handled()

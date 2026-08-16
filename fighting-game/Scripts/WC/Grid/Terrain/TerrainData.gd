@@ -10,8 +10,8 @@ func get_miss_bonus() -> float:
 func get_move_cost() -> int:
 	return 1
 
-func on_enter(unit):
+func on_enter():
 	pass
 
-func on_turn_end(unit):
+func on_turn_end():
 	pass

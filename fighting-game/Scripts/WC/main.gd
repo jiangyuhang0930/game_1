@@ -5,7 +5,7 @@ func _ready():
 	print("Battle Game Start")
 
 
-func _process(delta):
+func _process(_delta):
 	pass
 	
 func _input(event):
