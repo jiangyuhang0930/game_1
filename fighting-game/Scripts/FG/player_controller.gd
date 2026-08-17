@@ -8,6 +8,7 @@ class_name PlayerController
 @export var sword_slash_left : Sprite2D
 @export var sword_slash_up : Sprite2D
 @export var sword_slash_down : Sprite2D
+@export var melee_recoil_force: float = 4000.0
 var speed_multiplier = 30.0
 var jump_multiplier = -30.0
 var direction = 0
@@ -52,17 +53,23 @@ func _physics_process(delta: float) -> void:
 		is_attacking = true
 		if Input.is_action_pressed("up"):
 			curr_sword_slash = sword_slash_up
+			velocity.y = 1 * melee_recoil_force * 0.5
 		elif Input.is_action_pressed("down") and not is_on_floor():
 			curr_sword_slash = sword_slash_down
+			velocity.y = -1 * melee_recoil_force * 0.5
 		elif Input.get_axis("move_left", "move_right") == 1:
 			curr_sword_slash = sword_slash_right
+			velocity.x = -1 * melee_recoil_force 
 		elif Input.get_axis("move_left", "move_right") == -1:
 			curr_sword_slash = sword_slash_left
+			velocity.x = 1 * melee_recoil_force
 		else:
 
 			if !facing_right:
 				curr_sword_slash = sword_slash_left
+				velocity.x = 1 * melee_recoil_force
 			else:
 				curr_sword_slash = sword_slash_right
+				velocity.x = -1 * melee_recoil_force
 		curr_sword_slash.visible = true
 		curr_sword_slash.process_mode = Node.PROCESS_MODE_INHERIT
