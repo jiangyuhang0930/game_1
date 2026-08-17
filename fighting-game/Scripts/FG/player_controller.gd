@@ -14,6 +14,7 @@ var jump_multiplier = -30.0
 var direction = 0
 var jump_charges = 1
 var curr_sword_slash
+var external_force = 0
 
 var is_attacking = false
 var facing_right = true
@@ -37,17 +38,6 @@ func _physics_process(delta: float) -> void:
 		
 	if is_on_floor():
 		jump_charges = 1
-
-	# Get the input direction and handle the movement/deceleration.
-	# As good practice, you should replace UI actions with custom gameplay actions.
-	direction = Input.get_axis("move_left", "move_right")
-	if direction:
-		velocity.x = direction * speed * speed_multiplier
-	else:
-		velocity.x = move_toward(velocity.x, 0, speed * speed_multiplier)
-
-	move_and_slide()
-	
 	
 	if Input.is_action_pressed("attack") and !is_attacking:
 		is_attacking = true
@@ -59,10 +49,10 @@ func _physics_process(delta: float) -> void:
 			velocity.y = -1 * melee_recoil_force * 0.5
 		elif Input.get_axis("move_left", "move_right") == 1:
 			curr_sword_slash = sword_slash_right
-			velocity.x = -1 * melee_recoil_force 
+			external_force = -1 * melee_recoil_force 
 		elif Input.get_axis("move_left", "move_right") == -1:
 			curr_sword_slash = sword_slash_left
-			velocity.x = 1 * melee_recoil_force
+			external_force = 1 * melee_recoil_force
 		else:
 
 			if !facing_right:
@@ -73,3 +63,14 @@ func _physics_process(delta: float) -> void:
 				velocity.x = -1 * melee_recoil_force
 		curr_sword_slash.visible = true
 		curr_sword_slash.process_mode = Node.PROCESS_MODE_INHERIT
+		
+	# Get the input direction and handle the movement/deceleration.
+	# As good practice, you should replace UI actions with custom gameplay actions.
+	direction = Input.get_axis("move_left", "move_right")
+	if direction:
+		velocity.x = direction * speed * speed_multiplier
+	else:
+		velocity.x = move_toward(velocity.x, 0, speed * speed_multiplier)
+	velocity.x += external_force
+	external_force = move_toward(external_force, 0, speed * speed_multiplier)
+	move_and_slide()
