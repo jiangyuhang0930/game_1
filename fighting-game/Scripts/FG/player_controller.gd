@@ -43,24 +43,24 @@ func _physics_process(delta: float) -> void:
 		is_attacking = true
 		if Input.is_action_pressed("up"):
 			curr_sword_slash = sword_slash_up
-			velocity.y = 1 * melee_recoil_force * 0.5
+			apply_knockback('down', melee_recoil_force)
 		elif Input.is_action_pressed("down") and not is_on_floor():
 			curr_sword_slash = sword_slash_down
-			velocity.y = -1 * melee_recoil_force * 0.5
+			apply_knockback('up', melee_recoil_force)
 		elif Input.get_axis("move_left", "move_right") == 1:
 			curr_sword_slash = sword_slash_right
-			external_force = -1 * melee_recoil_force 
+			apply_knockback('left', melee_recoil_force)
 		elif Input.get_axis("move_left", "move_right") == -1:
 			curr_sword_slash = sword_slash_left
-			external_force = 1 * melee_recoil_force
+			apply_knockback('right', melee_recoil_force)
 		else:
 
 			if !facing_right:
 				curr_sword_slash = sword_slash_left
-				velocity.x = 1 * melee_recoil_force
+				apply_knockback('right', melee_recoil_force)
 			else:
 				curr_sword_slash = sword_slash_right
-				velocity.x = -1 * melee_recoil_force
+				apply_knockback('left', melee_recoil_force)
 		curr_sword_slash.visible = true
 		curr_sword_slash.process_mode = Node.PROCESS_MODE_INHERIT
 		
@@ -74,3 +74,19 @@ func _physics_process(delta: float) -> void:
 	velocity.x += external_force
 	external_force = move_toward(external_force, 0, speed * speed_multiplier)
 	move_and_slide()
+	
+func apply_knockback(direc:String, recoil_force: float)-> void:
+	if direc == 'down':
+		velocity.y = 1 * recoil_force * 0.5
+	elif direc == 'up' and not is_on_floor():
+		velocity.y = -1 * recoil_force * 0.5
+	elif direc == 'left':
+		if Input.get_axis("move_left", "move_right") == 1:
+			external_force = -1 * recoil_force
+		else:
+			velocity.x = -1 * recoil_force
+	elif direc == 'right':
+		if Input.get_axis("move_left", "move_right") == -1:
+			external_force = 1 * recoil_force
+		else:
+			velocity.x = 1 * recoil_force
