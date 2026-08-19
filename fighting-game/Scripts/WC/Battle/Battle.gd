@@ -80,6 +80,9 @@ func _ready() -> void:
 	# Initialize deployment system.
 	deployment_manager.initialize(grid_data)
 	
+	# Show the initial deployment area.
+	show_deployment_area()
+	
 	# ------------------------------------------------------------------
 	# Create initial heroes.
 	# ------------------------------------------------------------------
@@ -112,6 +115,10 @@ func start_battle() -> void:
 
 	# Switch to the hero action phase.
 	current_phase = BattlePhase.HERO_ACTION
+	# Hide the deployment area.
+	for child in movement_overlay.get_children():
+		child.queue_free()
+
 	# Hide the deployment cursor after entering the action phase.
 	selection.visible = false
 
@@ -206,6 +213,37 @@ func show_movement_cells() -> void:
 		indicator.position = grid_data.map_to_world(map_position)
 
 		movement_overlay.add_child(indicator)
+
+
+# Show the initial deployment area.
+func show_deployment_area() -> void:
+
+	# Remove any existing deployment indicators.
+	for child in movement_overlay.get_children():
+		child.queue_free()
+
+	# Create an indicator for every deployment cell.
+	for y in range(1, 5):
+		for x in range(-9, -5):
+
+			var map_position := Vector2i(x, y)
+
+			# Make sure this is actually a valid deployment cell.
+			if not deployment_manager.is_deployment_cell(map_position):
+				continue
+
+			var indicator := Sprite2D.new()
+
+			# Use the existing selection texture.
+			indicator.texture = selection.texture
+
+			# Make it slightly transparent.
+			indicator.modulate = Color(0.2, 0.5, 1.0, 0.65)
+
+			# Place it on the corresponding map cell.
+			indicator.position = grid_data.map_to_world(map_position)
+
+			movement_overlay.add_child(indicator)
 
 
 # Hide all movement indicators and clear the selected unit.

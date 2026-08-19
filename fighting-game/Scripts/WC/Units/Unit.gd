@@ -54,6 +54,7 @@ func set_map_position(new_position: Vector2i) -> void:
 	occupied_map_position = new_position
 
 	update_world_position()
+	update_grass_transparency()
 	
 func play_animation(animation_name: String) -> void:
 	if sprite.sprite_frames.has_animation(animation_name):
@@ -128,6 +129,9 @@ func move_along_path(path: Array[Vector2i]) -> void:
 
 		# Update the occupied grid position.
 		occupied_map_position = target_occupied_position
+		
+		# Update transparency based on terrain.
+		update_grass_transparency()
 
 	# Return to idle animation.
 	play_animation("idle")
@@ -146,6 +150,19 @@ func update_world_position() -> void:
 		return
 
 	position = grid_data.map_to_world(map_position)
+
+
+func update_grass_transparency() -> void:
+	if grid_data == null:
+		return
+
+	var cell := grid_data.get_cell_from_map(map_position)
+
+	if cell.terrain is GrassData:
+		visual_root.modulate.a = 0.5
+	else:
+		visual_root.modulate.a = 1.0
+
 
 func _on_click_area_input_event(
 	_viewport: Node,

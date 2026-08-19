@@ -28,7 +28,9 @@ func get_reachable_cells(
 		var current_distance: int = visited[current]
 
 		# Add the current cell to the reachable list.
-		reachable.append(current)
+		# Do not include the unit's current cell.
+		if current != start_position:
+			reachable.append(current)
 
 		# Stop expanding when the movement range is reached.
 		if current_distance >= move_range:
