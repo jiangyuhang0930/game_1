@@ -51,12 +51,7 @@ func set_grid_data(grid: GridData) -> void:
 
 func set_map_position(new_position: Vector2i) -> void:
 	map_position = new_position
-
-	# The unit occupies the cell one row below its visual position.
-	occupied_map_position = Vector2i(
-		new_position.x,
-		new_position.y - 1
-	)
+	occupied_map_position = new_position
 
 	update_world_position()
 	
@@ -102,11 +97,8 @@ func move_along_path(path: Array[Vector2i]) -> void:
 		# Pathfinding uses the unit's occupied grid coordinates.
 		var target_occupied_position: Vector2i = path[i]
 
-		# Convert the occupied cell to the unit's visual map position.
-		var target_map_position := Vector2i(
-			target_occupied_position.x,
-			target_occupied_position.y + 1
-		)
+		# The visual map position is now the same as the occupied cell.
+		var target_map_position := target_occupied_position
 		
 		# Face the direction of horizontal movement.
 		if target_occupied_position.x > occupied_map_position.x:

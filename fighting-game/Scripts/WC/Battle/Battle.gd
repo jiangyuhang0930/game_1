@@ -84,8 +84,8 @@ func _ready() -> void:
 	# Create initial heroes.
 	# ------------------------------------------------------------------
 
-	create_hero(Vector2i(-7, 4))
-	create_hero(Vector2i(-9, 5))
+	create_hero(Vector2i(-7, 3))
+	create_hero(Vector2i(-9, 4))
 	# create_hero(Vector2i(-9, 5))
 	# create_hero(Vector2i(-7, 4))
 	
@@ -341,7 +341,6 @@ func _unhandled_input(event: InputEvent) -> void:
 	# Convert mouse position to map coordinate.
 	var deployment_mouse_world := get_global_mouse_position()
 	var map_position := ground_layer.local_to_map(deployment_mouse_world)
-	map_position.y += 1
 
 	# Check whether the target cell is valid for deployment.
 	var can_deploy := deployment_manager.is_deployment_cell(map_position)

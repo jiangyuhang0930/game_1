@@ -12,7 +12,7 @@ scale = Vector2(0.4, 0.4)
 script = ExtResource("2_s3b7s")
 
 [node name="AnimatedSprite2D" parent="VisualRoot" parent_id_path=PackedInt32Array(1017908689) index="0" unique_id=1452732473]
-position = Vector2(1.533329, -65)
+position = Vector2(1.533, -25)
 scale = Vector2(0.9833333, 1)
 sprite_frames = ExtResource("3_gbnob")
 animation = &"idle"
@@ -21,6 +21,6 @@ offset = Vector2(2, 0)
 [node name="ClickArea" type="Area2D" parent="." index="4" unique_id=2131387285]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="ClickArea" index="0" unique_id=6974044]
-position = Vector2(1.0000004, -43.99999)
+position = Vector2(1.0000005, -3.9999866)
 scale = Vector2(0.9999998, 0.9999998)
 shape = SubResource("RectangleShape2D_gbnob")

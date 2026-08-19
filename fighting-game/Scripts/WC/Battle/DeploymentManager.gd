@@ -39,14 +39,8 @@ func add_hero(hero: Hero) -> bool:
 # Move a unit from its current cell to a new cell.
 func move_unit(unit: Unit, new_map_position: Vector2i) -> bool:
 
-	# The unit's logical occupied cell.
-	var new_occupied_position := Vector2i(
-		new_map_position.x,
-		new_map_position.y - 1
-	)
-
 	# Do not allow movement onto a blocked cell.
-	if not grid_data.can_occupy_cell(new_occupied_position):
+	if not grid_data.can_occupy_cell(new_map_position):
 		return false
 
 	# Release the old occupied cell.
@@ -54,14 +48,14 @@ func move_unit(unit: Unit, new_map_position: Vector2i) -> bool:
 
 	# Occupy the new cell.
 	var occupied := grid_data.occupy_cell(
-		new_occupied_position,
+		new_map_position,
 		unit
 	)
 
 	if not occupied:
 		return false
 
-	# Update the unit's visual position.
+	# Update the unit's position.
 	unit.set_map_position(new_map_position)
 
 	return true
@@ -105,8 +99,8 @@ func is_deployment_cell(map_position: Vector2i) -> bool:
 	return (
 		map_position.x >= -9
 		and map_position.x <= -6
-		and map_position.y >= 2
-		and map_position.y <= 5
+		and map_position.y >= 1
+		and map_position.y <= 4
 	)
 
 # Start dragging a unit.
