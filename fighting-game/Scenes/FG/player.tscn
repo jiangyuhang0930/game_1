@@ -160,7 +160,7 @@ _data = {
 &"slash": SubResource("Animation_feh4j")
 }
 
-[node name="Knight" type="CharacterBody2D" unique_id=828705993 node_paths=PackedStringArray("camera", "sword_slash_right", "sword_slash_left", "sword_slash_up", "sword_slash_down")]
+[node name="Knight" type="CharacterBody2D" unique_id=828705993 node_paths=PackedStringArray("camera", "sword_slash_right", "sword_slash_left", "sword_slash_up", "sword_slash_down") groups=["player"]]
 script = ExtResource("1_tai8l")
 speed = 30.0
 jump_power = 70.0

@@ -4,7 +4,7 @@
 [ext_resource type="Texture2D" uid="uid://bac3wegwt66xo" path="res://Art/FG/enemy/_Idle.png" id="2_2685o"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_byh2l"]
-size = Vector2(132, 233)
+size = Vector2(119.749985, 233)
 
 [sub_resource type="Animation" id="Animation_2685o"]
 length = 0.001
@@ -61,19 +61,19 @@ position = Vector2(-7.6293945e-06, 9.536743e-07)
 scale = Vector2(1.0000001, 1)
 
 [node name="CollisionShape2D2" type="CollisionShape2D" parent="Area2D" unique_id=1709861388]
-position = Vector2(128.99998, 119)
-shape = SubResource("RectangleShape2D_byh2l")
-
-[node name="RigidBody2D" type="RigidBody2D" parent="." unique_id=900669150]
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="RigidBody2D" unique_id=1829733210]
-position = Vector2(129, 119)
-scale = Vector2(1.0000001, 1)
+position = Vector2(130.12498, 119)
 shape = SubResource("RectangleShape2D_byh2l")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=137587204]
 libraries/ = SubResource("AnimationLibrary_d2rol")
 autoplay = &"idle"
+
+[node name="CharacterBody2D" type="CharacterBody2D" parent="." unique_id=1871321197]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="CharacterBody2D" unique_id=1829733210]
+position = Vector2(138, 121)
+scale = Vector2(1.0000001, 1)
+shape = SubResource("RectangleShape2D_byh2l")
 
 [connection signal="area_entered" from="Area2D" to="." method="_on_area_2d_area_entered"]
 [connection signal="body_entered" from="Area2D" to="." method="_on_area_2d_body_entered"]

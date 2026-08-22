@@ -15,6 +15,7 @@ var direction = 0
 var jump_charges = 1
 var curr_sword_slash
 var external_force = 0
+var knockback_direction : String
 
 var is_attacking = false
 var facing_right = true
@@ -43,24 +44,24 @@ func _physics_process(delta: float) -> void:
 		is_attacking = true
 		if Input.is_action_pressed("up"):
 			curr_sword_slash = sword_slash_up
-			apply_knockback('down', melee_recoil_force)
+			knockback_direction = 'down'
 		elif Input.is_action_pressed("down") and not is_on_floor():
 			curr_sword_slash = sword_slash_down
-			apply_knockback('up', melee_recoil_force)
+			knockback_direction = 'up'
 		elif Input.get_axis("move_left", "move_right") == 1:
 			curr_sword_slash = sword_slash_right
-			apply_knockback('left', melee_recoil_force)
+			knockback_direction = 'left'
 		elif Input.get_axis("move_left", "move_right") == -1:
 			curr_sword_slash = sword_slash_left
-			apply_knockback('right', melee_recoil_force)
+			knockback_direction = 'right'
 		else:
 
 			if !facing_right:
 				curr_sword_slash = sword_slash_left
-				apply_knockback('right', melee_recoil_force)
+				knockback_direction = 'right'
 			else:
 				curr_sword_slash = sword_slash_right
-				apply_knockback('left', melee_recoil_force)
+				knockback_direction = 'left'
 		curr_sword_slash.visible = true
 		curr_sword_slash.process_mode = Node.PROCESS_MODE_INHERIT
 		
@@ -72,20 +73,23 @@ func _physics_process(delta: float) -> void:
 	else:
 		velocity.x = move_toward(velocity.x, 0, speed * speed_multiplier)
 	velocity.x += external_force
-	external_force = move_toward(external_force, 0, speed * speed_multiplier)
+	external_force = move_toward(external_force, 0, 2 * speed * speed_multiplier)
+	#if external_force != 0:
+		#print(external_force)
+		#print(velocity.x)
 	move_and_slide()
 	
-func apply_knockback(direc:String, recoil_force: float)-> void:
-	if direc == 'down':
+func apply_knockback(recoil_force: float)-> void:
+	if knockback_direction == 'down':
 		velocity.y = 1 * recoil_force * 0.5
-	elif direc == 'up' and not is_on_floor():
+	elif knockback_direction == 'up' and not is_on_floor():
 		velocity.y = -1 * recoil_force * 0.5
-	elif direc == 'left':
+	elif knockback_direction == 'left':
 		if Input.get_axis("move_left", "move_right") == 1:
 			external_force = -1 * recoil_force
 		else:
 			velocity.x = -1 * recoil_force
-	elif direc == 'right':
+	elif knockback_direction == 'right':
 		if Input.get_axis("move_left", "move_right") == -1:
 			external_force = 1 * recoil_force
 		else:
