@@ -9,6 +9,7 @@ extends Node2D
 @onready var cursor: Cursor = $UI/Cursor
 @onready var selection: Sprite2D = $Overlay/Selection
 @onready var movement_overlay: Node2D = $Overlay/MovementOverlay
+@onready var undo_overlay: Node2D = $Overlay/UndoOverlay
 var current_map_position: Vector2i = Vector2i(-999999, -999999)
 
 @onready var deployment_manager: DeploymentManager = $Managers/DeploymentManager
@@ -148,22 +149,26 @@ func _process(_delta: float) -> void:
 
 func _on_hero_clicked(unit: Unit) -> void:
 
-	# Handle hero selection during the action phase.
+	# Hero action phase.
 	if current_phase == BattlePhase.HERO_ACTION:
 
-		# Do not switch selection while a unit is moving.
 		if is_unit_moving:
 			return
 
-		# Select the clicked hero directly.
+		# Clicking another Hero confirms the previous movement.
+		if selected_unit != null and selected_unit != unit:
+			if selected_unit.can_undo_move:
+				selected_unit.can_undo_move = false
+				clear_undo_position()
+
 		select_hero_for_action(unit)
 		return
 
-	# Heroes can only be dragged during the deployment phase.
+
+	# Deployment phase.
 	if current_phase != BattlePhase.DEPLOYMENT:
 		return
 
-	# Ignore repeated clicks.
 	if deployment_manager.is_dragging:
 		return
 
@@ -179,6 +184,10 @@ func select_hero_for_action(unit: Unit) -> void:
 
 	# Select the newly clicked unit.
 	selected_unit = unit
+	
+	# Do not show movement range if the unit has already moved.
+	if not unit.can_move():
+		return
 
 	# Calculate reachable cells from the selected unit.
 	movement_cells = pathfinding.get_reachable_cells(
@@ -213,6 +222,38 @@ func show_movement_cells() -> void:
 		indicator.position = grid_data.map_to_world(map_position)
 
 		movement_overlay.add_child(indicator)
+
+
+# Show the cell the unit can return to.
+func show_undo_position(unit: Unit) -> void:
+
+	# Remove any existing undo marker.
+	clear_undo_position()
+
+	var marker := Sprite2D.new()
+
+	# Use the existing selection texture.
+	marker.texture = selection.texture
+
+	# Make the marker slightly smaller.
+	marker.scale = Vector2(0.8, 0.8)
+
+	# Make it visually different from normal movement cells.
+	marker.modulate = Color(1.0, 0.85, 0.3, 0.9)
+
+	# Place the marker at the unit's previous position.
+	marker.position = grid_data.map_to_world(
+		unit.previous_map_position
+	)
+
+	undo_overlay.add_child(marker)
+
+
+# Remove the undo position marker.
+func clear_undo_position() -> void:
+
+	for child in undo_overlay.get_children():
+		child.queue_free()
 
 
 # Show the initial deployment area.
@@ -283,6 +324,9 @@ func move_selected_unit(target_cell: Vector2i) -> void:
 	is_unit_moving = true
 
 	var unit := selected_unit
+	
+	# Remember the position before moving.
+	unit.previous_map_position = unit.map_position
 
 	# Find the shortest path to the target cell.
 	var path := pathfinding.find_path(
@@ -306,110 +350,165 @@ func move_selected_unit(target_cell: Vector2i) -> void:
 		is_unit_moving = false
 		return
 
-	# Clear the selection while the unit is moving.
-	clear_unit_selection()
+	# Clear only the movement range while the unit is moving.
+	for child in movement_overlay.get_children():
+		child.queue_free()
 
 	# Move the unit along the calculated path.
 	await unit.move_along_path(path)
+	
+	# Mark the unit as having moved this turn.
+	unit.finish_move()
+	
+	# Show the position where the unit can undo to.
+	show_undo_position(unit)
 
 	is_unit_moving = false
 
 
 func _unhandled_input(event: InputEvent) -> void:
-	# Right-click cancels the current unit selection.
+
+	# --------------------------------------------------------------
+	# Right click
+	# --------------------------------------------------------------
+
 	if event.is_action_pressed("right_click"):
 
+		# Hero Action Phase
 		if current_phase == BattlePhase.HERO_ACTION:
-			clear_unit_selection()
 
-		# Mark the input as handled.
-		get_viewport().set_input_as_handled()
-		return
-	
+			# Undo the latest movement if possible.
+			if selected_unit != null and selected_unit.can_undo_move:
+
+				var undo_unit := selected_unit
+				var undone := deployment_manager.undo_move(undo_unit)
+
+				if undone:
+					clear_undo_position()
+
+					movement_cells = pathfinding.get_reachable_cells(
+						grid_data,
+						undo_unit.occupied_map_position,
+						undo_unit.move_range
+					)
+
+					show_movement_cells()
+
+			else:
+				# Otherwise, cancel the current selection.
+				clear_unit_selection()
+
+			get_viewport().set_input_as_handled()
+			return
+
+		# Deployment Phase
+		if current_phase == BattlePhase.DEPLOYMENT:
+
+			# Cancel dragging and restore the previous position.
+			if deployment_manager.is_dragging:
+
+				var dragging_unit := deployment_manager.get_selected_unit()
+
+				if dragging_unit != null:
+					dragging_unit.end_drag()
+					dragging_unit.set_map_position(
+						dragging_unit.previous_map_position
+					)
+
+				deployment_manager.stop_drag()
+
+			get_viewport().set_input_as_handled()
+			return
+
+
 	# --------------------------------------------------------------
 	# Hero Action Phase
 	# --------------------------------------------------------------
 
 	if current_phase == BattlePhase.HERO_ACTION:
 
-		# Ignore input while a unit is moving.
 		if is_unit_moving:
 			return
 
-		# Only handle left mouse clicks.
 		if not event.is_action_pressed("left_click"):
 			return
 
-		# There must be a selected unit.
+		# A left click confirms the previous movement.
+		if selected_unit != null and selected_unit.can_undo_move:
+			selected_unit.can_undo_move = false
+			clear_undo_position()
+
 		if selected_unit == null:
 			return
 
-		# Convert the mouse position to a map cell.
-		var mouse_world := get_global_mouse_position()
-		var target_cell := ground_layer.local_to_map(mouse_world)
+		# Get the clicked map cell.
+		var action_mouse_world := get_global_mouse_position()
+		var action_target_cell := ground_layer.local_to_map(
+			action_mouse_world
+		)
 
-		# Try to move to the selected cell.
-		move_selected_unit(target_cell)
+		move_selected_unit(action_target_cell)
 
 		get_viewport().set_input_as_handled()
 		return
+
 
 	# --------------------------------------------------------------
 	# Deployment Phase
 	# --------------------------------------------------------------
 
-	
-	# Deployment input is only available during the deployment phase.
 	if current_phase != BattlePhase.DEPLOYMENT:
 		return
-		
+
 	# Press Enter to finish deployment.
 	if event.is_action_pressed("ui_accept"):
 		start_battle()
+		get_viewport().set_input_as_handled()
 		return
 
-	# Only handle left mouse click.
+	# Only handle left mouse clicks.
 	if not event.is_action_pressed("left_click"):
 		return
 
-	# Ignore if no unit is being dragged.
+	# Ignore input if no unit is being dragged.
 	if not deployment_manager.is_dragging:
 		return
 
-	# Convert mouse position to map coordinate.
+	# Get the clicked deployment cell.
 	var deployment_mouse_world := get_global_mouse_position()
-	var map_position := ground_layer.local_to_map(deployment_mouse_world)
+	var deployment_map_position := ground_layer.local_to_map(
+		deployment_mouse_world
+	)
 
-	# Check whether the target cell is valid for deployment.
-	var can_deploy := deployment_manager.is_deployment_cell(map_position)
+	# Get the currently dragged unit.
+	var deployment_unit := deployment_manager.get_selected_unit()
 
-	# Get the current dragging unit.
-	var unit := deployment_manager.get_selected_unit()
-	# Make sure a unit is actually being dragged.
-	if unit == null:
+	if deployment_unit == null:
 		return
 
-	unit.end_drag()
+	# Stop dragging.
+	deployment_unit.end_drag()
 
-	if can_deploy:
+	# Try to place the unit in the selected deployment cell.
+	if deployment_manager.is_deployment_cell(deployment_map_position):
 
-		# Try to move the unit to the target cell.
-		var moved := deployment_manager.move_unit(
-			unit,
-			map_position
+		var deployment_moved := deployment_manager.move_unit(
+			deployment_unit,
+			deployment_map_position
 		)
 
-		# Return to the previous position if the target cell is blocked.
-		if not moved:
-			unit.set_map_position(unit.previous_map_position)
+		# Restore the previous position if the move failed.
+		if not deployment_moved:
+			deployment_unit.set_map_position(
+				deployment_unit.previous_map_position
+			)
 
 	else:
-
-		# Return to the previous position if the target is outside
-		# the deployment area.
-		unit.set_map_position(unit.previous_map_position)
+		# Restore the previous position if outside the deployment area.
+		deployment_unit.set_map_position(
+			deployment_unit.previous_map_position
+		)
 
 	deployment_manager.stop_drag()
 
-	# Prevent this click from reaching the hero again.
 	get_viewport().set_input_as_handled()

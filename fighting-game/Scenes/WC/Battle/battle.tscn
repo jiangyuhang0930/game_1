@@ -39,6 +39,8 @@ texture = ExtResource("2_aqr0y")
 
 [node name="MovementOverlay" type="Node2D" parent="Overlay" unique_id=881713717]
 
+[node name="UndoOverlay" type="Node2D" parent="Overlay" unique_id=1949206934]
+
 [node name="Units" type="Node2D" parent="." unique_id=2068894453]
 
 [node name="Managers" type="Node2D" parent="." unique_id=552536298]

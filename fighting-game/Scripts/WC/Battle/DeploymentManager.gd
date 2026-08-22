@@ -91,6 +91,39 @@ func move_unit_to_occupied_cell(
 	return true
 
 
+# Undo the unit's latest movement.
+func undo_move(unit: Unit) -> bool:
+
+	var current_position := unit.occupied_map_position
+	var previous_position := unit.previous_map_position
+
+	# The previous cell must be available.
+	if not grid_data.can_occupy_cell(previous_position):
+		return false
+
+	# Release the unit's current cell.
+	grid_data.release_cell(current_position)
+
+	# Occupy the previous cell.
+	var occupied := grid_data.occupy_cell(
+		previous_position,
+		unit
+	)
+
+	if not occupied:
+		# Restore the current cell if something went wrong.
+		grid_data.occupy_cell(
+			current_position,
+			unit
+		)
+		return false
+
+	# Update the unit's position.
+	unit.undo_move()
+
+	return true
+
+
 func get_heroes() -> Array[Hero]:
 	return heroes
 

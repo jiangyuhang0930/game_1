@@ -11,6 +11,12 @@ var occupied_map_position: Vector2i
 ## Maximum number of cells this unit can move.
 @export var move_range: int = 3
 
+## Whether this unit has already moved this turn.
+var has_moved: bool = false
+
+## Whether the unit can undo its latest movement.
+var can_undo_move: bool = false
+
 ## Reference to the GridData.
 var grid_data: GridData
 
@@ -79,6 +85,29 @@ func begin_drag() -> void:
 
 func end_drag() -> void:
 	is_dragging = false
+
+
+func can_move() -> bool:
+	return not has_moved
+
+
+func undo_move() -> void:
+	if not can_undo_move:
+		return
+
+	set_map_position(previous_map_position)
+
+	has_moved = false
+	can_undo_move = false
+
+
+func finish_move() -> void:
+	has_moved = true
+	can_undo_move = true
+
+
+func reset_action() -> void:
+	has_moved = false
 
 
 # Move the unit along a grid path.
