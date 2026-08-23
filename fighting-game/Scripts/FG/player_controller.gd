@@ -33,6 +33,10 @@ func _input(event):
 		print("dash")
 
 func _physics_process(delta: float) -> void:
+	
+	if health == 0:
+		print('gg')
+	
 	# Add the gravity.
 	if not is_on_floor():
 		velocity += get_gravity() * delta * 3
@@ -78,6 +82,7 @@ func _physics_process(delta: float) -> void:
 		#print(external_force)
 		#print(velocity.x)
 	move_and_slide()
+	
 	
 func apply_knockback(recoil_force: float)-> void:
 	if knockback_direction == 'down':
