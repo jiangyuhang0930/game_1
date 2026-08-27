@@ -17,6 +17,8 @@ var current_map_position: Vector2i = Vector2i(-999999, -999999)
 
 # Hero scene used to create new units.
 @export var hero_scene: PackedScene
+# Goblin scene used for testing.
+@export var goblin_scene: PackedScene
 
 # ------------------------------------------------------------------
 # Battle Phase
@@ -68,6 +70,23 @@ func create_hero(start_position: Vector2i) -> Hero:
 	return hero
 
 
+func create_goblin(start_position: Vector2i) -> Goblin:
+
+	var goblin := goblin_scene.instantiate() as Goblin
+
+	# Add to the scene.
+	$Units.add_child(goblin)
+
+	# Initialize goblin.
+	goblin.set_grid_data(grid_data)
+	goblin.set_map_position(start_position)
+
+	# Face left toward the heroes.
+	goblin.visual_root.scale.x = -abs(goblin.visual_root.scale.x)
+
+	return goblin
+
+
 func _ready() -> void:
 	Input.mouse_mode = Input.MOUSE_MODE_HIDDEN
 	
@@ -92,6 +111,8 @@ func _ready() -> void:
 	create_hero(Vector2i(-9, 4))
 	# create_hero(Vector2i(-9, 5))
 	# create_hero(Vector2i(-7, 4))
+	
+	create_goblin(Vector2i(7, -4))
 	
 
 # ------------------------------------------------------------------
