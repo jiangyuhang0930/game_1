@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://b0743icbvdc27"
-path="res://.godot/imported/Hellfire_rhino-Sheet_red.png-0390128933017dccccefdaef46ab7bda.ctex"
+uid="uid://b3nb2mug4c6hy"
+path="res://.godot/imported/Sword_warrior.png-eedf4d4da7585984c737e747a5c664fd.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Resources/WC/Sprites/Hero/Hellfire_rhino/Hellfire_rhino-Sheet_red.png"
-dest_files=["res://.godot/imported/Hellfire_rhino-Sheet_red.png-0390128933017dccccefdaef46ab7bda.ctex"]
+source_file="res://Art/WC/Portrait/Sword_warrior.png"
+dest_files=["res://.godot/imported/Sword_warrior.png-eedf4d4da7585984c737e747a5c664fd.ctex"]
 
 [params]
 

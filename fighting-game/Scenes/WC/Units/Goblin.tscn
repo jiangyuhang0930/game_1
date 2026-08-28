@@ -3,6 +3,7 @@
 [ext_resource type="PackedScene" uid="uid://dbdwcfwim23l2" path="res://Scenes/WC/Units/Unit.tscn" id="1_0nviw"]
 [ext_resource type="Script" uid="uid://dhasp0567bauh" path="res://Scripts/WC/Units/Goblin.gd" id="1_8fdb7"]
 [ext_resource type="Texture2D" uid="uid://6ycltrhc08mm" path="res://Resources/WC/Sprites/Enemy/Goblin/Attack.png" id="3_45ln0"]
+[ext_resource type="Texture2D" uid="uid://djxsk73x8d74w" path="res://Art/WC/Portrait/Goblin.png" id="3_ugyw8"]
 [ext_resource type="Texture2D" uid="uid://c7seatm8671xd" path="res://Resources/WC/Sprites/Enemy/Goblin/Death.png" id="4_ugyw8"]
 [ext_resource type="Texture2D" uid="uid://cdlc7mhpafips" path="res://Resources/WC/Sprites/Enemy/Goblin/Idle.png" id="5_isp3p"]
 [ext_resource type="Texture2D" uid="uid://bc1ffrivpjf8i" path="res://Resources/WC/Sprites/Enemy/Goblin/Run.png" id="6_kou1y"]
@@ -237,6 +238,8 @@ size = Vector2(11.75, 13.75)
 
 [node name="Unit" unique_id=638368485 instance=ExtResource("1_0nviw")]
 script = ExtResource("1_8fdb7")
+unit_name = "Goblin"
+portrait = ExtResource("3_ugyw8")
 
 [node name="AnimatedSprite2D" parent="VisualRoot" parent_id_path=PackedInt32Array(1017908689) index="0" unique_id=1452732473]
 position = Vector2(0, -3)

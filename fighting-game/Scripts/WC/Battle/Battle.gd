@@ -14,6 +14,7 @@ var current_map_position: Vector2i = Vector2i(-999999, -999999)
 
 @onready var deployment_manager: DeploymentManager = $Managers/DeploymentManager
 @onready var pathfinding: Pathfinding = $Managers/Pathfinding
+@onready var unit_info_panel: Control = $UI/UnitInfoPanel
 
 # Hero scene used to create new units.
 @export var hero_scene: PackedScene
@@ -41,6 +42,7 @@ var movement_cells: Array[Vector2i] = []
 # Whether a unit is currently moving.
 var is_unit_moving: bool = false
 
+
 # ------------------------------------------------------------------
 # Hero Creation
 # ------------------------------------------------------------------
@@ -66,7 +68,7 @@ func create_hero(start_position: Vector2i) -> Hero:
 		return null
 
 	# Listen for click events.
-	hero.clicked.connect(_on_hero_clicked)
+	hero.clicked.connect(_on_unit_clicked)
 	return hero
 
 
@@ -80,6 +82,9 @@ func create_goblin(start_position: Vector2i) -> Goblin:
 	# Initialize goblin.
 	goblin.set_grid_data(grid_data)
 	goblin.set_map_position(start_position)
+	
+	# Listen for Goblin clicks.
+	goblin.clicked.connect(_on_unit_clicked)
 
 	# Face left toward the heroes.
 	goblin.visual_root.scale.x = -abs(goblin.visual_root.scale.x)
@@ -168,37 +173,61 @@ func _process(_delta: float) -> void:
 	# print(current_map_position)
 
 
-func _on_hero_clicked(unit: Unit) -> void:
+func _on_unit_clicked(unit: Unit) -> void:
 
-	# Hero action phase.
+	# Show the clicked unit's information.
+	unit_info_panel.show_unit(unit)
+
+	# --------------------------------------------------------------
+	# Hero Action Phase
+	# --------------------------------------------------------------
+
 	if current_phase == BattlePhase.HERO_ACTION:
 
+		# Do not change selection while a unit is moving.
 		if is_unit_moving:
 			return
 
-		# Clicking another Hero confirms the previous movement.
+		# Clicking another unit confirms the currently selected Hero.
 		if selected_unit != null and selected_unit != unit:
+
 			if selected_unit.can_undo_move:
 				selected_unit.can_undo_move = false
 				clear_undo_position()
 
+			# Clear the old Hero's movement range.
+			clear_unit_selection()
+
+		# Only Heroes can be selected for movement.
+		if not unit is Hero:
+			return
+
+		# Select the clicked Hero.
 		select_hero_for_action(unit)
 		return
 
 
-	# Deployment phase.
+	# --------------------------------------------------------------
+	# Deployment Phase
+	# --------------------------------------------------------------
+
 	if current_phase != BattlePhase.DEPLOYMENT:
 		return
 
+	# Only Heroes can be dragged during deployment.
+	if not unit is Hero:
+		return
+
+	# Ignore repeated clicks while already dragging.
 	if deployment_manager.is_dragging:
 		return
 
 	deployment_manager.start_drag(unit)
 	unit.begin_drag()
-	
-	
+
+
 # Select a unit and display its movement range.
-func select_hero_for_action(unit: Unit) -> void:
+func select_hero_for_action(unit: Hero) -> void:
 
 	# Clear the previous unit's movement range.
 	clear_unit_selection()
@@ -454,7 +483,38 @@ func _unhandled_input(event: InputEvent) -> void:
 		if not event.is_action_pressed("left_click"):
 			return
 
-		# A left click confirms the previous movement.
+		# print("BATTLE CLICK")
+
+		# ----------------------------------------------------------
+		# Do not treat a Unit click as a movement command.
+		# The Unit's ClickArea will handle the selection.
+		# ----------------------------------------------------------
+
+		var action_mouse_world := get_global_mouse_position()
+
+		var space_state := get_world_2d().direct_space_state
+
+		var query := PhysicsPointQueryParameters2D.new()
+		query.position = action_mouse_world
+		query.collide_with_areas = true
+		query.collide_with_bodies = false
+
+		var results := space_state.intersect_point(query)
+
+		for result in results:
+
+			var collider = result.get("collider")
+
+			if collider == null:
+				continue
+
+			if collider.get_parent() is Unit:
+				return
+
+		# ----------------------------------------------------------
+		# A left click on the map confirms the previous movement.
+		# ----------------------------------------------------------
+
 		if selected_unit != null and selected_unit.can_undo_move:
 			selected_unit.can_undo_move = false
 			clear_undo_position()
@@ -463,7 +523,6 @@ func _unhandled_input(event: InputEvent) -> void:
 			return
 
 		# Get the clicked map cell.
-		var action_mouse_world := get_global_mouse_position()
 		var action_target_cell := ground_layer.local_to_map(
 			action_mouse_world
 		)
