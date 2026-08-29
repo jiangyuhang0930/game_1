@@ -3,6 +3,7 @@
 [ext_resource type="TileSet" uid="uid://xwci2f7lvnj5" path="res://Resources/WC/TileSets/WarChessTiles.tres" id="1_c8wje"]
 [ext_resource type="Script" uid="uid://bclv21irqimen" path="res://Scripts/WC/Battle/Battle.gd" id="1_en5gs"]
 [ext_resource type="Texture2D" uid="uid://8tonnqhif3tn" path="res://Art/WC/Overlay/select.png" id="2_aqr0y"]
+[ext_resource type="PackedScene" uid="uid://bb1sx23fgd20s" path="res://Scenes/WC/Units/Goblin.tscn" id="3_0y7nj"]
 [ext_resource type="Script" uid="uid://bx3ro06l56h2o" path="res://Scripts/WC/Grid/GridData.gd" id="3_en5gs"]
 [ext_resource type="Script" uid="uid://c5srqgcslchhb" path="res://Scripts/WC/UI/cursor.gd" id="3_o8bsx"]
 [ext_resource type="Texture2D" uid="uid://c6ojpilfi2b66" path="res://Art/WC/Cursor/Mouse.png" id="3_wqxgi"]
@@ -10,10 +11,17 @@
 [ext_resource type="Script" uid="uid://b6s0u7ea7we6g" path="res://Scripts/WC/Battle/DeploymentManager.gd" id="6_87egc"]
 [ext_resource type="Script" uid="uid://jpn0bnuqxv3g" path="res://Scripts/WC/Systems/Pathfinding.gd" id="7_xwls7"]
 [ext_resource type="Script" uid="uid://dfo2e343sydn7" path="res://Scripts/WC/main.gd" id="8_87egc"]
+[ext_resource type="Script" uid="uid://tp5rlaiwfeaf" path="res://Scripts/WC/UI/UnitInfoPanel.gd" id="11_tkbda"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_tkbda"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_11lf4"]
+bg_color = Color(0.7113471, 0.015447011, 0.1595493, 1)
 
 [node name="Battle" type="Node2D" unique_id=1810912349]
 script = ExtResource("1_en5gs")
 hero_scene = ExtResource("4_tsqcv")
+goblin_scene = ExtResource("3_0y7nj")
 
 [node name="GroundLayer" type="TileMapLayer" parent="." unique_id=407587823]
 tile_map_data = PackedByteArray("AAD4//z/AAAAAAAAAAD4//3/AAAAAAAAAAD4//7/AAAAAAAAAAD5//z/AAAAAAAAAAD5//3/AAAAAAAAAAD5//7/AAAAAAAAAAD6//z/AAAAAAAAAAD6//3/AAAAAAAAAAD6//7/AAAAAAAAAAD3//v/AAAAAAAAAAD3//z/AAAAAAAAAAD3//3/AAAAAAAAAAD3//7/AAAAAAAAAAD4//v/AAAAAAAAAAD5//v/AAAAAAAAAAD6//v/AAAAAAAAAAD7//z/AAAAAAAAAAD8//v/AAAAAAAAAAD4////AAAAAAAAAAD5////AAAAAAAAAAD5/wAAAAAAAAAAAAD6////AAAAAAAAAAD6/wAAAAAAAAAAAAD6/wEAAAAAAAAAAAD7////AAAAAAAAAAD7//7/AAAAAAAAAAD7//3/AAAAAAAAAAD7//v/AAAAAAAAAAD8//z/AAAAAAAAAAD8//3/AAAAAAAAAAD8//7/AAAAAAAAAAD8////AAAAAAAAAAD8/wAAAAAAAAAAAAD8/wEAAAAAAAAAAAD7/wAAAAAAAAAAAAD7/wEAAAAAAAAAAAD7/wIAAAAAAAAAAAD7/wMAAAAAAAAAAAD6/wMAAAAAAAAAAAD6/wQAAAAAAAAAAAD5/wQAAAAAAAAAAAD4/wQAAAAAAAAAAAD3/wQAAAAAAAAAAAD3/wMAAAAAAAAAAAD3/wIAAAAAAAAAAAD3/wEAAAAAAAAAAAD3/wAAAAAAAAAAAAD3////AAAAAAAAAAD4/wAAAAAAAAAAAAD4/wEAAAAAAAAAAAD4/wIAAAAAAAAAAAD4/wMAAAAAAAAAAAD5/wMAAAAAAAAAAAD5/wIAAAAAAAAAAAD5/wEAAAAAAAAAAAD6/wIAAAAAAAAAAAD8/wIAAAAAAAAAAAD9/wIAAAAFAAAAAAD+/wIAAAAGAAAAAAD//wIAAAAGAAAAAAAAAAIAAAAGAAMAAAABAAIAAAAGAAEAAAACAAIAAAAHAAAAAAAEAAIAAAAAAAAAAAAFAAIAAAAAAAAAAAAGAAIAAAAAAAAAAAAHAAIAAAAAAAAAAAAIAAMAAAAAAAAAAAAEAAMAAAAAAAAAAAADAAMAAAAAAAAAAAACAAMAAAAAAAAAAAABAAMAAAAEAAIAAAAAAAMAAAAAAAAAAAD//wMAAAAAAAAAAAD+/wMAAAAAAAAAAAD9/wMAAAAAAAAAAAD8/wMAAAAAAAAAAAD7/wQAAAAAAAAAAAD8/wQAAAAAAAAAAAD9/wQAAAAAAAAAAAD+/wQAAAAAAAAAAAD//wQAAAAAAAAAAAAAAAQAAAAAAAAAAAABAAQAAAAEAAMAAAACAAQAAAAAAAAAAAADAAQAAAAAAAAAAAAEAAQAAAAAAAAAAAAFAAQAAAAAAAAAAAAGAAQAAAAAAAAAAAAHAAQAAAAAAAAAAAAIAAQAAAAAAAAAAAAIAAIAAAAAAAAAAAAIAAEAAAAAAAAAAAAIAAAAAAAAAAAAAAAIAP//AAAAAAAAAAAIAP7/AAAAAAAAAAAIAP3/AAAAAAAAAAAIAPz/AAAAAAAAAAAIAPv/AAAAAAAAAAAHAPv/AAAAAAAAAAAGAPv/AAAAAAAAAAAFAPv/AAAAAAAAAAAEAPv/AAAAAAAAAAADAPv/AAAAAAAAAAACAPv/AAAAAAAAAAABAPv/AAAAAAAAAAAAAPv/AAAAAAAAAAD///v/AAAAAAAAAAD+//v/AAAAAAAAAAD9//v/AAAAAAAAAAD9//z/AAAAAAAAAAD+//z/AAAAAAAAAAD///z/AAAAAAAAAAAAAPz/AAAAAAAAAAABAPz/AAAAAAAAAAACAPz/AAAAAAAAAAADAPz/AAAAAAAAAAAEAPz/AAAAAAAAAAAFAPz/AAAAAAAAAAAGAPz/AAAAAAAAAAAHAPz/AAAAAAAAAAAHAP3/AAAAAAAAAAAGAP3/AAAAAAAAAAAFAP3/AAAAAAAAAAAEAP3/AAAAAAAAAAADAP3/AAAAAAAAAAACAP3/AAAAAAAAAAABAP3/AAAAAAAAAAABAP7/AAAAAAAAAAAAAP7/AAAEAAEAAAD///7/AAAAAAAAAAD+//7/AAAAAAAAAAD9//7/AAAAAAAAAAD9////AAAAAAAAAAD+////AAAAAAAAAAD/////AAAFAAAAAAAAAP//AAAGAAIAAAABAP//AAAHAAAAAAACAP//AAAAAAAAAAAEAP//AAAAAAAAAAAFAP//AAAAAAAAAAAGAP//AAAAAAAAAAAHAP//AAAAAAAAAAAHAP7/AAAAAAAAAAAGAP7/AAAAAAAAAAAFAP7/AAAAAAAAAAACAP7/AAAAAAAAAAAAAP3/AAAAAAAAAAD///3/AAAAAAAAAAD+//3/AAAAAAAAAAD9//3/AAAAAAAAAAD9/wAAAAAAAAAAAAD+/wAAAAAAAAAAAAD//wAAAAAAAAAAAAAAAAAAAAAFAAIAAAABAAAAAAAGAAAAAAACAAAAAAAHAAAAAAAEAAAAAAAAAAAAAAAFAAAAAAAAAAAAAAAGAAAAAAAAAAAAAAAHAAAAAAAAAAAAAAAHAAEAAAAAAAAAAAAGAAEAAAAAAAAAAAAFAAEAAAAAAAAAAAAEAAEAAAAAAAAAAAACAAEAAAAAAAAAAAABAAEAAAAAAAAAAAAAAAEAAAAEAAIAAAD//wEAAAAAAAAAAAD+/wEAAAAAAAAAAAD9/wEAAAAAAAAAAAADAP//AAAAAAAAAAADAP7/AAAAAAAAAAAEAP7/AAAAAAAAAAAFAAMAAAAAAAAAAAAGAAMAAAAAAAAAAAAHAAMAAAAAAAAAAAD3/wUAAAABAAQAAAD4/wUAAAABAAQAAAD5/wUAAAABAAQAAAD6/wUAAAABAAQAAAD7/wUAAAABAAQAAAD8/wUAAAABAAQAAAD9/wUAAAABAAQAAAD+/wUAAAABAAQAAAD//wUAAAABAAQAAAAAAAUAAAABAAQAAAABAAUAAAABAAQAAAACAAUAAAABAAQAAAADAAUAAAABAAQAAAAEAAUAAAABAAQAAAAFAAUAAAABAAQAAAAGAAUAAAABAAQAAAAHAAUAAAABAAQAAAAIAAUAAAABAAQAAAD3//r/AAABAAYAAAD4//r/AAABAAYAAAD5//r/AAABAAYAAAD6//r/AAABAAYAAAD7//r/AAABAAYAAAD8//r/AAABAAYAAAD9//r/AAABAAYAAAD+//r/AAABAAYAAAD///r/AAABAAYAAAAAAPr/AAABAAYAAAABAPr/AAABAAYAAAACAPr/AAABAAYAAAADAPr/AAABAAYAAAAEAPr/AAABAAYAAAAFAPr/AAABAAYAAAAGAPr/AAABAAYAAAAHAPr/AAABAAYAAAAIAPr/AAABAAYAAAD2//v/AAACAAUAAAD2//z/AAACAAUAAAD2//3/AAACAAUAAAD2//7/AAACAAUAAAD2////AAACAAUAAAD2/wAAAAACAAUAAAD2/wEAAAACAAUAAAD2/wIAAAACAAUAAAD2/wMAAAACAAUAAAD2/wQAAAACAAUAAAAJAPv/AAAAAAUAAAAJAPz/AAAAAAUAAAAJAP3/AAAAAAUAAAAJAP7/AAAAAAUAAAAJAP//AAAAAAUAAAAJAAAAAAAAAAUAAAAJAAEAAAAAAAUAAAAJAAIAAAAAAAUAAAAJAAMAAAAAAAUAAAAJAAQAAAAAAAUAAAD2/wUAAAAAAAgAAAAJAAUAAAABAAgAAAAJAPr/AAABAAcAAAD2//r/AAAAAAcAAAADAAIAAAAAAAAAAAADAAEAAAAAAAAAAAADAAAAAAAAAAAAAAA=")
@@ -65,6 +73,67 @@ script = ExtResource("3_o8bsx")
 [node name="Sprite2D" type="Sprite2D" parent="UI/Cursor" unique_id=1230001302]
 texture = ExtResource("3_wqxgi")
 centered = false
+
+[node name="UnitInfoPanel" type="Control" parent="UI" unique_id=1818109025]
+visible = false
+layout_mode = 3
+anchors_preset = 0
+offset_left = 20.0
+offset_top = 20.0
+offset_right = 210.0
+offset_bottom = 120.0
+script = ExtResource("11_tkbda")
+
+[node name="Panel" type="Panel" parent="UI/UnitInfoPanel" unique_id=19514294]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="UI/UnitInfoPanel/Panel" unique_id=1520493254]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 10
+
+[node name="HBoxContainer" type="HBoxContainer" parent="UI/UnitInfoPanel/Panel/MarginContainer" unique_id=2005728299]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Portrait" type="TextureRect" parent="UI/UnitInfoPanel/Panel/MarginContainer/HBoxContainer" unique_id=1143109905]
+custom_minimum_size = Vector2(64, 64)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="InfoContainer" type="VBoxContainer" parent="UI/UnitInfoPanel/Panel/MarginContainer/HBoxContainer" unique_id=1367584994]
+layout_mode = 2
+theme_override_constants/separation = 8
+alignment = 1
+
+[node name="NameLabel" type="Label" parent="UI/UnitInfoPanel/Panel/MarginContainer/HBoxContainer/InfoContainer" unique_id=428246288]
+layout_mode = 2
+
+[node name="HPBar" type="ProgressBar" parent="UI/UnitInfoPanel/Panel/MarginContainer/HBoxContainer/InfoContainer" unique_id=1089582110]
+custom_minimum_size = Vector2(83, 10)
+layout_mode = 2
+localize_numeral_system = false
+theme_override_styles/background = SubResource("StyleBoxFlat_tkbda")
+theme_override_styles/fill = SubResource("StyleBoxFlat_11lf4")
+show_percentage = false
+
+[node name="HPLabel" type="Label" parent="UI/UnitInfoPanel/Panel/MarginContainer/HBoxContainer/InfoContainer" unique_id=1060491871]
+layout_mode = 2
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="Switch" type="Node2D" parent="." unique_id=1902472875]
 script = ExtResource("8_87egc")

@@ -14,3 +14,7 @@ script = ExtResource("1_bnykf")
 [node name="UI" type="Node2D" parent="." unique_id=2041348403]
 
 [node name="Marker2D" type="Marker2D" parent="." unique_id=1064405911]
+
+[node name="ClickArea" type="Area2D" parent="." unique_id=1699749257]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ClickArea" unique_id=1171996678]

@@ -11,6 +11,18 @@ var occupied_map_position: Vector2i
 ## Maximum number of cells this unit can move.
 @export var move_range: int = 3
 
+## Maximum health of this unit.
+@export var max_hp: int = 10
+
+## Current health of this unit.
+var current_hp: int
+
+## Display name of this unit.
+@export var unit_name: String = "Unit"
+
+## Portrait displayed in the unit information panel.
+@export var portrait: Texture2D
+
 ## Whether this unit has already moved this turn.
 var has_moved: bool = false
 
@@ -44,9 +56,9 @@ var drag_offset: Vector2
 var previous_map_position: Vector2i
 
 func _ready() -> void:
+	current_hp = max_hp
 	play_animation("idle")
 	click_area.input_event.connect(_on_click_area_input_event)
-	# print("ClickArea connected:", click_area)
 	
 func initialize(grid: GridData, start_position: Vector2i) -> void:
 	grid_data = grid

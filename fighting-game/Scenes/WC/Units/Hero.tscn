@@ -2,14 +2,18 @@
 
 [ext_resource type="PackedScene" uid="uid://dbdwcfwim23l2" path="res://Scenes/WC/Units/Unit.tscn" id="1_q0ktm"]
 [ext_resource type="Script" uid="uid://vaa3wcqk555" path="res://Scripts/WC/Units/Hero.gd" id="2_s3b7s"]
+[ext_resource type="Texture2D" uid="uid://h1bx1moo5fkr" path="res://Art/WC/Portrait/Hero.png" id="3_dr0ud"]
 [ext_resource type="SpriteFrames" uid="uid://bs4f1ymumpelh" path="res://Resources/WC/Animations/Knight/Knight.tres" id="3_gbnob"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_gbnob"]
-size = Vector2(28.000002, 38)
+size = Vector2(27.5, 37.500008)
 
 [node name="Unit" unique_id=638368485 instance=ExtResource("1_q0ktm")]
 scale = Vector2(0.4, 0.4)
 script = ExtResource("2_s3b7s")
+max_hp = 15
+unit_name = "Knight"
+portrait = ExtResource("3_dr0ud")
 
 [node name="AnimatedSprite2D" parent="VisualRoot" parent_id_path=PackedInt32Array(1017908689) index="0" unique_id=1452732473]
 position = Vector2(1.533, -25)
@@ -18,9 +22,7 @@ sprite_frames = ExtResource("3_gbnob")
 animation = &"idle"
 offset = Vector2(2, 0)
 
-[node name="ClickArea" type="Area2D" parent="." index="4" unique_id=2131387285]
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="ClickArea" index="0" unique_id=6974044]
-position = Vector2(1.0000005, -3.9999866)
-scale = Vector2(0.9999998, 0.9999998)
+[node name="CollisionShape2D" parent="ClickArea" parent_id_path=PackedInt32Array(1699749257) index="0" unique_id=1171996678]
+position = Vector2(1, -4)
+scale = Vector2(1.02, 1.02)
 shape = SubResource("RectangleShape2D_gbnob")
