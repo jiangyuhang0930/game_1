@@ -43,6 +43,18 @@ tracks/0/keys = {
 "update": 1,
 "values": [ExtResource("1_k3ug5")]
 }
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite2D:modulate")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 0.74, 0.74, 1)]
+}
 
 [sub_resource type="Animation" id="Animation_j2gsv"]
 resource_name = "knight_attack"
@@ -58,6 +70,23 @@ tracks/0/keys = {
 "transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1),
 "update": 1,
 "values": [ExtResource("4_w8wgg"), ExtResource("5_4bvnc"), ExtResource("6_nd763"), ExtResource("7_w7y1f"), ExtResource("8_uuhd0"), ExtResource("9_6rwnm")]
+}
+
+[sub_resource type="Animation" id="Animation_uuhd0"]
+resource_name = "knight_hurt"
+length = 0.6333333
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.13333336, 0.2666667, 0.38025147, 0.4912738, 0.5925816),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1),
+"update": 0,
+"values": [Color(1, 0.74, 0.74, 1), Color(1, 1, 1, 1), Color(1, 0.76, 0.76, 1), Color(1, 1, 1, 1), Color(1, 0.73, 0.73, 1), Color(1, 1, 1, 1)]
 }
 
 [sub_resource type="Animation" id="Animation_tx1dd"]
@@ -114,6 +143,7 @@ tracks/0/keys = {
 _data = {
 &"RESET": SubResource("Animation_f1ek2"),
 &"knight_attack": SubResource("Animation_j2gsv"),
+&"knight_hurt": SubResource("Animation_uuhd0"),
 &"knight_idle": SubResource("Animation_tx1dd"),
 &"knight_jump": SubResource("Animation_fd4e3"),
 &"knight_walk": SubResource("Animation_igrcy")
@@ -185,6 +215,7 @@ animation_player = NodePath("AnimationPlayer")
 sprite = NodePath("Sprite2D")
 
 [node name="Sprite2D" type="Sprite2D" parent="PlayerAnimator" unique_id=772702096]
+modulate = Color(1, 0.74, 0.74, 1)
 position = Vector2(258, 127)
 texture = ExtResource("1_k3ug5")
 

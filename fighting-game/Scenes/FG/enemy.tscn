@@ -47,8 +47,9 @@ _data = {
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_byh2l"]
 size = Vector2(104.87499, 222)
 
-[node name="Enemy" type="Node2D" unique_id=1138559623]
+[node name="Enemy" type="Node2D" unique_id=1138559623 node_paths=PackedStringArray("area")]
 script = ExtResource("1_qtr51")
+area = NodePath("Area2D")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1519903756]
 texture_filter = 1

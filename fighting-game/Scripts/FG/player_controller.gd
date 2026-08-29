@@ -19,6 +19,8 @@ var knockback_direction : String
 
 var is_attacking = false
 var facing_right = true
+var grounded = false
+var invinsible = false
 
 func _input(event):
 	# Handle jump.
@@ -72,7 +74,7 @@ func _physics_process(delta: float) -> void:
 	# Get the input direction and handle the movement/deceleration.
 	# As good practice, you should replace UI actions with custom gameplay actions.
 	direction = Input.get_axis("move_left", "move_right")
-	if direction:
+	if direction and not grounded:
 		velocity.x = direction * speed * speed_multiplier
 	else:
 		velocity.x = move_toward(velocity.x, 0, speed * speed_multiplier)
@@ -99,3 +101,13 @@ func apply_knockback(recoil_force: float)-> void:
 			external_force = 1 * recoil_force
 		else:
 			velocity.x = 1 * recoil_force
+			
+func slow_down_time():
+	Engine.time_scale = 0.5
+	grounded = true
+	invinsible = true
+	await get_tree().create_timer(0.25).timeout
+	Engine.time_scale = 1.0
+	grounded = false
+	await get_tree().create_timer(0.25).timeout
+	invinsible = false
