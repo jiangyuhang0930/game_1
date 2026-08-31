@@ -21,6 +21,7 @@ var is_attacking = false
 var facing_right = true
 var grounded = false
 var invinsible = false
+var hurt = false
 
 func _input(event):
 	# Handle jump.
@@ -106,7 +107,7 @@ func slow_down_time():
 	Engine.time_scale = 0.5
 	grounded = true
 	invinsible = true
-	await get_tree().create_timer(0.25).timeout
+	await get_tree().create_timer(0.5).timeout
 	Engine.time_scale = 1.0
 	grounded = false
 	await get_tree().create_timer(0.25).timeout

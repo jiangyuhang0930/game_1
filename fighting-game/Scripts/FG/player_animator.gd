@@ -6,6 +6,7 @@ extends Node2D
 
 func _process(delta):
 	# flips the character sprite
+	
 	if not player_controller.is_attacking:
 		if player_controller.direction == 1:
 			sprite.flip_h = false
@@ -27,7 +28,14 @@ func _process(delta):
 		player_controller.curr_sword_slash.visible = false
 		player_controller.curr_sword_slash.process_mode = Node.PROCESS_MODE_DISABLED
 		
-
+			#await animation_player.animation_finished
+			#print(animation_player.current_animation)
+		
+	if player_controller.invinsible:
+		animation_player.play("knight_hurt")
+		return
+		#player_controller.invinsible = false
+	
 	##plays the movement animation
 	if abs(player_controller.velocity.x) > 0.0:
 		animation_player.play("knight_walk")
@@ -36,4 +44,5 @@ func _process(delta):
 		
 	if player_controller.velocity.y != 0.0:
 		animation_player.play("knight_jump")	
+	
 	
