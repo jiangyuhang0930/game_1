@@ -15,6 +15,7 @@ var current_map_position: Vector2i = Vector2i(-999999, -999999)
 @onready var deployment_manager: DeploymentManager = $Managers/DeploymentManager
 @onready var pathfinding: Pathfinding = $Managers/Pathfinding
 @onready var unit_info_panel: Control = $UI/UnitInfoPanel
+@onready var end_turn_button: Button = $UI/EndTurnButton
 
 # Hero scene used to create new units.
 @export var hero_scene: PackedScene
@@ -27,7 +28,8 @@ var current_map_position: Vector2i = Vector2i(-999999, -999999)
 
 enum BattlePhase {
 	DEPLOYMENT,
-	HERO_ACTION
+	HERO_TURN,
+	ENEMY_TURN
 }
 
 # The current phase of the battle.
@@ -95,6 +97,10 @@ func create_goblin(start_position: Vector2i) -> Goblin:
 func _ready() -> void:
 	Input.mouse_mode = Input.MOUSE_MODE_HIDDEN
 	
+	# Set the end turn button
+	end_turn_button.pressed.connect(_on_end_turn_button_pressed)
+	end_turn_button.visible = false
+	
 	grid_data.initialize(
 		ground_layer,
 		grass_layer,
@@ -141,7 +147,7 @@ func start_battle() -> void:
 		deployment_manager.stop_drag()
 
 	# Switch to the hero action phase.
-	current_phase = BattlePhase.HERO_ACTION
+	current_phase = BattlePhase.HERO_TURN
 	# Hide the deployment area.
 	for child in movement_overlay.get_children():
 		child.queue_free()
@@ -149,8 +155,80 @@ func start_battle() -> void:
 	# Hide the deployment cursor after entering the action phase.
 	selection.visible = false
 
-	print("Battle Phase: HERO_ACTION")
-	
+	start_hero_turn()
+
+
+# Start a new Hero Turn.
+func start_hero_turn() -> void:
+
+	current_phase = BattlePhase.HERO_TURN
+	end_turn_button.visible = true
+
+	# Reset all heroes so they can act again this turn.
+	for hero in deployment_manager.get_heroes():
+		hero.reset_action()
+		hero.can_undo_move = false
+
+	# Clear any previous selection and undo marker.
+	clear_unit_selection()
+	clear_undo_position()
+
+	print("Battle Phase: HERO_TURN")
+
+
+# End the current Hero Turn.
+func end_hero_turn() -> void:
+
+	if current_phase != BattlePhase.HERO_TURN:
+		return
+
+	if is_unit_moving:
+		return
+
+	# Confirm the current unit's movement.
+	if selected_unit != null and selected_unit.can_undo_move:
+		selected_unit.can_undo_move = false
+
+	clear_undo_position()
+	clear_unit_selection()
+
+	start_enemy_turn()
+
+
+# Start the Enemy Turn.
+func start_enemy_turn() -> void:
+
+	current_phase = BattlePhase.ENEMY_TURN
+	end_turn_button.visible = false
+
+	clear_unit_selection()
+	clear_undo_position()
+
+	print("Battle Phase: ENEMY_TURN")
+
+	# Enemy AI will be added later.
+	await get_tree().create_timer(0.5).timeout
+
+	end_enemy_turn()
+
+
+# End the current Enemy Turn.
+func end_enemy_turn() -> void:
+
+	if current_phase != BattlePhase.ENEMY_TURN:
+		return
+
+	start_hero_turn()
+
+
+# Handle the End Turn button.
+func _on_end_turn_button_pressed() -> void:
+
+	if current_phase != BattlePhase.HERO_TURN:
+		return
+
+	end_hero_turn()
+
 
 func _process(_delta: float) -> void:
 
@@ -182,7 +260,7 @@ func _on_unit_clicked(unit: Unit) -> void:
 	# Hero Action Phase
 	# --------------------------------------------------------------
 
-	if current_phase == BattlePhase.HERO_ACTION:
+	if current_phase == BattlePhase.HERO_TURN:
 
 		# Do not change selection while a unit is moving.
 		if is_unit_moving:
@@ -425,7 +503,7 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("right_click"):
 
 		# Hero Action Phase
-		if current_phase == BattlePhase.HERO_ACTION:
+		if current_phase == BattlePhase.HERO_TURN:
 
 			# Undo the latest movement if possible.
 			if selected_unit != null and selected_unit.can_undo_move:
@@ -472,10 +550,15 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 	# --------------------------------------------------------------
-	# Hero Action Phase
+	# Hero Turn
 	# --------------------------------------------------------------
 
-	if current_phase == BattlePhase.HERO_ACTION:
+	if current_phase == BattlePhase.HERO_TURN:
+		# Press Enter to end the Hero Turn.
+		if event.is_action_pressed("ui_accept"):
+			end_hero_turn()
+			get_viewport().set_input_as_handled()
+			return
 
 		if is_unit_moving:
 			return
@@ -520,6 +603,10 @@ func _unhandled_input(event: InputEvent) -> void:
 			clear_undo_position()
 
 		if selected_unit == null:
+			return
+
+		# Do not allow a Hero to move again after it has already moved.
+		if selected_unit != null and not selected_unit.can_move():
 			return
 
 		# Get the clicked map cell.
