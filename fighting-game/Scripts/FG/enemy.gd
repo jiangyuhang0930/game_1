@@ -15,9 +15,10 @@ func _process(_delta):
 			else:
 				player.knockback_direction = 'right'
 			if not player.invinsible:
-				player.apply_knockback(player.melee_recoil_force)
+				player.apply_knockback(player.melee_recoil_force * 0.75)
 				player.health -= 1
 				player.slow_down_time()
+				player.update_hearts_container()
 
 
 func _on_area_2d_area_entered(area: Area2D) -> void:

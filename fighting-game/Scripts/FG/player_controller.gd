@@ -1,6 +1,7 @@
 extends CharacterBody2D
 class_name PlayerController
-@export var health = 10
+@export var health = 5
+@export var max_health = 5
 @export var speed = 10.0
 @export var jump_power = 50.0
 @export var camera : Camera2D
@@ -23,6 +24,14 @@ var grounded = false
 var invinsible = false
 var hurt = false
 
+var hearts_list : Array[TextureRect]
+
+func _ready():
+	var hearts_parent = $HealthBar/HealthBarContainer
+	for child in hearts_parent.get_children():
+		hearts_list.append(child)
+	
+
 func _input(event):
 	# Handle jump.
 	if event.is_action_pressed("jump") and (is_on_floor() or jump_charges > 0):
@@ -38,7 +47,7 @@ func _input(event):
 func _physics_process(delta: float) -> void:
 	
 	if health == 0:
-		print('gg')
+		get_tree().quit()
 	
 	# Add the gravity.
 	if not is_on_floor():
@@ -47,7 +56,7 @@ func _physics_process(delta: float) -> void:
 	if is_on_floor():
 		jump_charges = 1
 	
-	if Input.is_action_pressed("attack") and !is_attacking:
+	if Input.is_action_pressed("attack") and !is_attacking and !grounded:
 		is_attacking = true
 		if Input.is_action_pressed("up"):
 			curr_sword_slash = sword_slash_up
@@ -107,8 +116,16 @@ func slow_down_time():
 	Engine.time_scale = 0.5
 	grounded = true
 	invinsible = true
-	await get_tree().create_timer(0.5).timeout
+	await get_tree().create_timer(0.25).timeout
 	Engine.time_scale = 1.0
 	grounded = false
 	await get_tree().create_timer(0.25).timeout
 	invinsible = false
+	
+func update_hearts_container():
+
+	for i in range(len(hearts_list)):
+		if i < health:
+			hearts_list[i].visible = true
+		else:
+			hearts_list[i].visible = false
