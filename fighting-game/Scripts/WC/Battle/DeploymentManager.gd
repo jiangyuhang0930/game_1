@@ -4,10 +4,7 @@ class_name DeploymentManager
 
 var grid_data: GridData
 
-## All heroes in battle.
-var heroes: Array[Hero] = []
-
-## Currently selected unit.
+# Currently selected unit.
 var selected_unit: Unit = null
 
 var is_dragging: bool = false
@@ -18,21 +15,20 @@ func initialize(grid: GridData) -> void:
 
 func add_hero(hero: Hero) -> bool:
 
-	if heroes.has(hero):
-		return true
-
 	# Try to occupy the cell corresponding to the unit's position.
 	var occupied := grid_data.occupy_cell(
 		hero.occupied_map_position,
 		hero
 	)
 
-	# Do not register the hero if its starting cell is blocked.
+	# Do not add the hero if its starting cell is blocked.
 	if not occupied:
-		push_error("Cannot add hero to blocked cell: " + str(hero.occupied_map_position))
+		push_error(
+			"Cannot add hero to blocked cell: "
+			+ str(hero.occupied_map_position)
+		)
 		return false
 
-	heroes.append(hero)
 	return true
 
 
@@ -122,10 +118,6 @@ func undo_move(unit: Unit) -> bool:
 	unit.undo_move()
 
 	return true
-
-
-func get_heroes() -> Array[Hero]:
-	return heroes
 
 
 func is_deployment_cell(map_position: Vector2i) -> bool:

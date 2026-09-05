@@ -38,6 +38,12 @@ var current_phase: BattlePhase = BattlePhase.DEPLOYMENT
 # Currently selected unit during the hero action phase.
 var selected_unit: Unit = null
 
+# All heroes currently in the battle.
+var heroes: Array[Hero] = []
+
+# All enemies currently in the battle.
+var enemies: Array[Enemy] = []
+
 # Cells currently reachable by the selected unit.
 var movement_cells: Array[Vector2i] = []
 
@@ -68,7 +74,10 @@ func create_hero(start_position: Vector2i) -> Hero:
 	if not added:
 		hero.queue_free()
 		return null
-
+		
+	# Register the hero in the battle.
+	heroes.append(hero)
+		
 	# Listen for click events.
 	hero.clicked.connect(_on_unit_clicked)
 	return hero
@@ -84,6 +93,20 @@ func create_goblin(start_position: Vector2i) -> Goblin:
 	# Initialize goblin.
 	goblin.set_grid_data(grid_data)
 	goblin.set_map_position(start_position)
+
+	# Try to occupy the starting cell.
+	var added := grid_data.occupy_cell(
+		goblin.occupied_map_position,
+		goblin
+	)
+
+	# Cancel enemy creation if the target cell is already occupied or blocked.
+	if not added:
+		goblin.queue_free()
+		return null
+
+	# Register the enemy in the battle.
+	enemies.append(goblin)
 	
 	# Listen for Goblin clicks.
 	goblin.clicked.connect(_on_unit_clicked)
@@ -165,7 +188,7 @@ func start_hero_turn() -> void:
 	end_turn_button.visible = true
 
 	# Reset all heroes so they can act again this turn.
-	for hero in deployment_manager.get_heroes():
+	for hero in heroes:
 		hero.reset_action()
 		hero.can_undo_move = false
 
@@ -206,8 +229,13 @@ func start_enemy_turn() -> void:
 
 	print("Battle Phase: ENEMY_TURN")
 
-	# Enemy AI will be added later.
-	await get_tree().create_timer(0.5).timeout
+	# Execute each enemy's turn in order.
+	for enemy in enemies:
+		await enemy.take_turn(
+			heroes,
+			pathfinding,
+			deployment_manager
+		)
 
 	end_enemy_turn()
 
