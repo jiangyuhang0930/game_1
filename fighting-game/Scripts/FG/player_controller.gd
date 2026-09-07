@@ -23,6 +23,7 @@ var facing_right = true
 var grounded = false
 var invinsible = false
 var hurt = false
+var is_dashing = false
 
 var hearts_list : Array[TextureRect]
 
@@ -42,7 +43,7 @@ func _input(event):
 		get_tree().change_scene_to_file("res://Scenes/WC/Battle/battle.tscn")
 		
 	if event.is_action_pressed("dash"):
-		print("dash")
+		is_dashing = true
 
 func _physics_process(delta: float) -> void:
 	
