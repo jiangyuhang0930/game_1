@@ -1,9 +1,9 @@
 [gd_scene format=3 uid="uid://c8185knhexkbj"]
 
 [ext_resource type="PackedScene" uid="uid://dbdwcfwim23l2" path="res://Scenes/WC/Units/Unit.tscn" id="1_q0ktm"]
-[ext_resource type="Script" uid="uid://vaa3wcqk555" path="res://Scripts/WC/Units/Hero.gd" id="2_s3b7s"]
-[ext_resource type="Texture2D" uid="uid://h1bx1moo5fkr" path="res://Art/WC/Portrait/Hero.png" id="3_dr0ud"]
+[ext_resource type="Script" uid="uid://vaa3wcqk555" path="res://Scripts/WC/Units/Knight.gd" id="2_s3b7s"]
 [ext_resource type="SpriteFrames" uid="uid://bs4f1ymumpelh" path="res://Resources/WC/Animations/Knight/Knight.tres" id="3_gbnob"]
+[ext_resource type="Texture2D" uid="uid://ce310g4dhyfxp" path="res://Art/WC/Portrait/Knight.png" id="3_pvrm8"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_gbnob"]
 size = Vector2(27.5, 37.500008)
@@ -11,9 +11,8 @@ size = Vector2(27.5, 37.500008)
 [node name="Unit" unique_id=638368485 instance=ExtResource("1_q0ktm")]
 scale = Vector2(0.4, 0.4)
 script = ExtResource("2_s3b7s")
-max_hp = 15
 unit_name = "Knight"
-portrait = ExtResource("3_dr0ud")
+portrait = ExtResource("3_pvrm8")
 
 [node name="AnimatedSprite2D" parent="VisualRoot" parent_id_path=PackedInt32Array(1017908689) index="0" unique_id=1452732473]
 position = Vector2(1.533, -25)

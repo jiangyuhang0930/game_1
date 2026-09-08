@@ -19,8 +19,12 @@ var current_map_position: Vector2i = Vector2i(-999999, -999999)
 
 # Hero scene used to create new units.
 @export var hero_scene: PackedScene
-# Goblin scene used for testing.
+# Goblin scene.
 @export var goblin_scene: PackedScene
+# Spear Warrior scene
+@export var spear_warrior_scene: PackedScene
+# Hellfire Rhino scene
+@export var hellfire_rhino_scene: PackedScene
 
 # ------------------------------------------------------------------
 # Battle Phase
@@ -56,31 +60,85 @@ var is_unit_moving: bool = false
 # ------------------------------------------------------------------
 
 # Create and initialize a hero.
-func create_hero(start_position: Vector2i) -> Hero:
+func create_knight(start_position: Vector2i) -> Hero:
 
-	var hero := hero_scene.instantiate() as Hero
+	var knight := hero_scene.instantiate() as Hero
 
 	# Add to the scene.
-	$Units.add_child(hero)
+	$Units.add_child(knight)
 
 	# Initialize hero.
-	hero.set_grid_data(grid_data)
-	hero.set_map_position(start_position)
+	knight.set_grid_data(grid_data)
+	knight.set_map_position(start_position)
 
 	# Register hero.
-	var added := deployment_manager.add_hero(hero)
+	var added := deployment_manager.add_hero(knight)
 
 	# Cancel hero creation if the target cell is already occupied.
 	if not added:
-		hero.queue_free()
+		knight.queue_free()
 		return null
 		
 	# Register the hero in the battle.
-	heroes.append(hero)
+	heroes.append(knight)
 		
 	# Listen for click events.
-	hero.clicked.connect(_on_unit_clicked)
-	return hero
+	knight.clicked.connect(_on_unit_clicked)
+	return knight
+
+
+func create_spear_warrior(start_position: Vector2i) -> Hero:
+
+	var spear_warrior := spear_warrior_scene.instantiate() as Hero
+
+	# Add to the scene.
+	$Units.add_child(spear_warrior)
+
+	# Initialize hero.
+	spear_warrior.set_grid_data(grid_data)
+	spear_warrior.set_map_position(start_position)
+
+	# Register hero.
+	var added := deployment_manager.add_hero(spear_warrior)
+
+	# Cancel hero creation if the target cell is already occupied.
+	if not added:
+		spear_warrior.queue_free()
+		return null
+		
+	# Register the hero in the battle.
+	heroes.append(spear_warrior)
+		
+	# Listen for click events.
+	spear_warrior.clicked.connect(_on_unit_clicked)
+	return spear_warrior
+
+
+func create_hellfire_rhino(start_position: Vector2i) -> Hero:
+
+	var hellfire_rhino := hellfire_rhino_scene.instantiate() as Hero
+
+	# Add to the scene.
+	$Units.add_child(hellfire_rhino)
+
+	# Initialize hero.
+	hellfire_rhino.set_grid_data(grid_data)
+	hellfire_rhino.set_map_position(start_position)
+
+	# Register hero.
+	var added := deployment_manager.add_hero(hellfire_rhino)
+
+	# Cancel hero creation if the target cell is already occupied.
+	if not added:
+		hellfire_rhino.queue_free()
+		return null
+		
+	# Register the hero in the battle.
+	heroes.append(hellfire_rhino)
+		
+	# Listen for click events.
+	hellfire_rhino.clicked.connect(_on_unit_clicked)
+	return hellfire_rhino
 
 
 func create_goblin(start_position: Vector2i) -> Goblin:
@@ -141,10 +199,15 @@ func _ready() -> void:
 	# Create initial heroes.
 	# ------------------------------------------------------------------
 
-	create_hero(Vector2i(-7, 3))
-	create_hero(Vector2i(-9, 4))
-	# create_hero(Vector2i(-9, 5))
-	# create_hero(Vector2i(-7, 4))
+	create_knight(Vector2i(-7, 3))
+	# create_knight(Vector2i(-9, 4))
+	# create_knight(Vector2i(-9, 5))
+	# create_knight(Vector2i(-7, 4))
+	
+	create_spear_warrior(Vector2i(-9, 4))
+	# create_spear_warrior(Vector2i(-7, 3))
+	
+	create_hellfire_rhino(Vector2i(-9, 3))
 	
 	create_goblin(Vector2i(7, -4))
 	

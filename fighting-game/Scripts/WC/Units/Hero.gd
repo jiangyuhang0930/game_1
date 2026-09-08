@@ -1,2 +1,2 @@
-extends "res://Scripts/WC/Units/Unit.gd"
+extends Unit
 class_name Hero
