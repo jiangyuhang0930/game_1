@@ -17,8 +17,12 @@
 [ext_resource type="Texture2D" uid="uid://dpammurbluxc3" path="res://Art/FG/Knight/attack/Knight_attack_05.png" id="8_uuhd0"]
 [ext_resource type="Texture2D" uid="uid://wipqsc7ggpdd" path="res://Art/FG/Knight/attack/Knight_attack_06.png" id="9_6rwnm"]
 [ext_resource type="Texture2D" uid="uid://d0sj0bxir2sch" path="res://Art/FG/Knight/walk/Knight_walk_03.png" id="9_7dp3o"]
+[ext_resource type="Texture2D" uid="uid://blgecgjjv7fy7" path="res://Art/FG/Knight/dash/Knight_dash_01.png" id="10_d2srl"]
 [ext_resource type="Texture2D" uid="uid://c0w80y6gka7mg" path="res://Art/FG/Knight/walk/Knight_walk_04.png" id="10_h4iuc"]
+[ext_resource type="Texture2D" uid="uid://bmynvkdf0u702" path="res://Art/FG/Knight/hurt/Knight_hurt_02.png" id="10_rlgve"]
 [ext_resource type="Texture2D" uid="uid://p7o8jvebt14q" path="res://Art/FG/Knight/walk/Knight_walk_05.png" id="11_fd4e3"]
+[ext_resource type="Texture2D" uid="uid://3o3wjlrqat7n" path="res://Art/FG/Knight/dash/Knight_dash_02.png" id="11_itpjj"]
+[ext_resource type="Texture2D" uid="uid://bd1l2yukpwbet" path="res://Art/FG/Knight/dash/Knight_dash_03.png" id="12_7q8vp"]
 [ext_resource type="Texture2D" uid="uid://bjywftlu5a6pl" path="res://Art/FG/Knight/walk/Knight_walk_06.png" id="12_qqcod"]
 [ext_resource type="Texture2D" uid="uid://dyuk3k4tsnq0u" path="res://Art/FG/Knight/slash_effect/File1.png" id="15_akfvt"]
 [ext_resource type="Texture2D" uid="uid://ditx83ripx52c" path="res://Art/FG/Knight/slash_effect/File2.png" id="22_uuhd0"]
@@ -62,9 +66,25 @@ tracks/0/keys = {
 "values": [ExtResource("4_w8wgg"), ExtResource("5_4bvnc"), ExtResource("6_nd763"), ExtResource("7_w7y1f"), ExtResource("8_uuhd0"), ExtResource("9_6rwnm")]
 }
 
+[sub_resource type="Animation" id="Animation_3rqtu"]
+resource_name = "knight_dash"
+length = 0.33333334
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0.033333335, 0.16666667, 0.3),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 1,
+"values": [ExtResource("10_d2srl"), ExtResource("11_itpjj"), ExtResource("12_7q8vp")]
+}
+
 [sub_resource type="Animation" id="Animation_uuhd0"]
 resource_name = "knight_hurt"
-length = 0.53333336
+length = 0.5
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
@@ -76,6 +96,18 @@ tracks/0/keys = {
 "transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1),
 "update": 0,
 "values": [Color(1, 1, 1, 1), Color(1, 0.74, 0.74, 1), Color(1, 0.76, 0.76, 1), Color(1, 1, 1, 1), Color(1, 0.73, 0.73, 1), Color(1, 1, 1, 1)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite2D:texture")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.033056356, 0.23333333),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [ExtResource("10_rlgve"), ExtResource("10_rlgve")]
 }
 
 [sub_resource type="Animation" id="Animation_tx1dd"]
@@ -132,6 +164,7 @@ tracks/0/keys = {
 _data = {
 &"RESET": SubResource("Animation_f1ek2"),
 &"knight_attack": SubResource("Animation_j2gsv"),
+&"knight_dash": SubResource("Animation_3rqtu"),
 &"knight_hurt": SubResource("Animation_uuhd0"),
 &"knight_idle": SubResource("Animation_tx1dd"),
 &"knight_jump": SubResource("Animation_fd4e3"),

@@ -30,6 +30,10 @@ func _process(delta):
 		
 			#await animation_player.animation_finished
 			#print(animation_player.current_animation)
+			
+	if player_controller.is_dashing:
+		animation_player.play("knight_dash")
+		return
 		
 	if player_controller.invinsible:
 		animation_player.play("knight_hurt")
