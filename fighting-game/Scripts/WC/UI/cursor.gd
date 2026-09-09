@@ -8,6 +8,8 @@ const CURSOR_SCALE := 1.5
 
 func _ready() -> void:
 	sprite.scale = Vector2.ONE * CURSOR_SCALE
+	z_index = 100
+	visible = true
 
 func _input(event: InputEvent) -> void:
 	if event is InputEventMouseMotion:

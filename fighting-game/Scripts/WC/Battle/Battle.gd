@@ -17,6 +17,11 @@ var current_map_position: Vector2i = Vector2i(-999999, -999999)
 @onready var unit_info_panel: Control = $UI/UnitInfoPanel
 @onready var end_turn_button: Button = $UI/EndTurnButton
 
+@onready var action_panel: Control = $UI/ActionPanel
+@onready var attack_button: Button = $UI/ActionPanel/VBoxContainer/AttackButton
+@onready var wait_button: Button = $UI/ActionPanel/VBoxContainer/WaitButton
+@onready var cancel_button: Button = $UI/ActionPanel/VBoxContainer/CancelButton
+
 # Hero scene used to create new units.
 @export var hero_scene: PackedScene
 # Goblin scene.
@@ -53,6 +58,9 @@ var movement_cells: Array[Vector2i] = []
 
 # Whether a unit is currently moving.
 var is_unit_moving: bool = false
+
+# Whether the action menu is opening.
+var is_action_menu_open: bool = false
 
 
 # ------------------------------------------------------------------
@@ -182,6 +190,9 @@ func _ready() -> void:
 	end_turn_button.pressed.connect(_on_end_turn_button_pressed)
 	end_turn_button.visible = false
 	
+	# Connect the action menu buttons.
+	wait_button.pressed.connect(_on_wait_button_pressed)
+	
 	grid_data.initialize(
 		ground_layer,
 		grass_layer,
@@ -199,7 +210,7 @@ func _ready() -> void:
 	# Create initial heroes.
 	# ------------------------------------------------------------------
 
-	create_knight(Vector2i(-7, 3))
+	create_knight(Vector2i(-8, 4))
 	# create_knight(Vector2i(-9, 4))
 	# create_knight(Vector2i(-9, 5))
 	# create_knight(Vector2i(-7, 4))
@@ -321,13 +332,37 @@ func _on_end_turn_button_pressed() -> void:
 	end_hero_turn()
 
 
-func _process(_delta: float) -> void:
+# Confirm the selected Hero's movement and end its action.
+func _on_wait_button_pressed() -> void:
 
+	if current_phase != BattlePhase.HERO_TURN:
+		return
+
+	if selected_unit == null:
+		return
+
+	# Confirm the latest movement so it can no longer be undone.
+	selected_unit.can_undo_move = false
+
+	# Remove the undo marker.
+	clear_undo_position()
+
+	# Close the action menu and clear the current selection.
+	clear_unit_selection()
+
+
+func _process(_delta: float) -> void:
+	
+	if is_action_menu_open and action_panel.get_global_rect().has_point(
+		get_viewport().get_mouse_position()
+	):
+		selection.hide()
+		return
+	
 	var world_position := get_global_mouse_position()
 	var map_position := ground_layer.local_to_map(world_position)
-
 	# print(map_position)
-	
+
 	# when mouse on grid show the select
 	if map_position == current_map_position:
 		return
@@ -352,6 +387,10 @@ func _on_unit_clicked(unit: Unit) -> void:
 	# --------------------------------------------------------------
 
 	if current_phase == BattlePhase.HERO_TURN:
+		
+		# Ignore unit clicks while the action menu is open.
+		if is_action_menu_open:
+			return
 
 		# Do not change selection while a unit is moving.
 		if is_unit_moving:
@@ -369,6 +408,17 @@ func _on_unit_clicked(unit: Unit) -> void:
 
 		# Only Heroes can be selected for movement.
 		if not unit is Hero:
+			return
+		
+		# A Hero that has already moved can open the action menu immediately.
+		if unit.has_moved:
+			selected_unit = unit
+			show_action_menu()
+			return
+			
+		# Clicking the currently selected Hero opens the action menu.
+		if selected_unit == unit:
+			show_action_menu()
 			return
 
 		# Select the clicked Hero.
@@ -398,7 +448,8 @@ func _on_unit_clicked(unit: Unit) -> void:
 # Select a unit and display its movement range.
 func select_hero_for_action(unit: Hero) -> void:
 
-	# Clear the previous unit's movement range.
+	# Clear the previous unit's selection.
+	hide_action_menu()
 	clear_unit_selection()
 
 	# Select the newly clicked unit.
@@ -513,6 +564,9 @@ func clear_unit_selection() -> void:
 	for child in movement_overlay.get_children():
 		child.queue_free()
 
+	# Hide the action menu.
+	hide_action_menu()
+
 	# Clear the selected unit.
 	selected_unit = null
 
@@ -583,6 +637,46 @@ func move_selected_unit(target_cell: Vector2i) -> void:
 	show_undo_position(unit)
 
 	is_unit_moving = false
+	show_action_menu()
+
+
+# Handle right-click before UI controls consume the event.
+func _input(event: InputEvent) -> void:
+
+	if not event.is_action_pressed("right_click"):
+		return
+
+	if current_phase != BattlePhase.HERO_TURN:
+		return
+
+	if is_unit_moving:
+		return
+
+	# Undo the latest movement even when the mouse is over the action menu.
+	if selected_unit != null and selected_unit.can_undo_move:
+
+		var undo_unit := selected_unit
+		var undone := deployment_manager.undo_move(undo_unit)
+
+		if undone:
+			clear_undo_position()
+			hide_action_menu()
+
+			movement_cells = pathfinding.get_reachable_cells(
+				grid_data,
+				undo_unit.occupied_map_position,
+				undo_unit.move_range
+			)
+
+			show_movement_cells()
+
+		get_viewport().set_input_as_handled()
+		return
+
+	# Close the action menu if there is no movement to undo.
+	if is_action_menu_open:
+		hide_action_menu()
+		get_viewport().set_input_as_handled()
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -604,6 +698,7 @@ func _unhandled_input(event: InputEvent) -> void:
 
 				if undone:
 					clear_undo_position()
+					hide_action_menu()
 
 					movement_cells = pathfinding.get_reachable_cells(
 						grid_data,
@@ -649,6 +744,10 @@ func _unhandled_input(event: InputEvent) -> void:
 		if event.is_action_pressed("ui_accept"):
 			end_hero_turn()
 			get_viewport().set_input_as_handled()
+			return
+			
+		# Ignore map input while the action menu is open.
+		if is_action_menu_open:
 			return
 
 		if is_unit_moving:
@@ -770,3 +869,24 @@ func _unhandled_input(event: InputEvent) -> void:
 	deployment_manager.stop_drag()
 
 	get_viewport().set_input_as_handled()
+
+
+func show_action_menu() -> void:
+	if selected_unit == null:
+		return
+
+	for child in movement_overlay.get_children():
+		child.queue_free()
+
+	is_action_menu_open = true
+
+	var screen_position := get_viewport().get_canvas_transform() * \
+		selected_unit.global_position
+
+	action_panel.position = screen_position + Vector2(20, 20)
+	action_panel.show()
+
+
+func hide_action_menu() -> void:
+	is_action_menu_open = false
+	action_panel.hide()
