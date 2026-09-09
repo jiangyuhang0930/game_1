@@ -56,6 +56,9 @@ var enemies: Array[Enemy] = []
 # Cells currently reachable by the selected unit.
 var movement_cells: Array[Vector2i] = []
 
+# Whether the player is currently selecting a movement destination.
+var is_movement_selection_active: bool = false
+
 # Whether a unit is currently moving.
 var is_unit_moving: bool = false
 
@@ -469,6 +472,9 @@ func select_hero_for_action(unit: Hero) -> void:
 		unit.occupied_map_position,
 		unit.move_range
 	)
+	
+	# Enable movement selection.
+	is_movement_selection_active = true
 
 	# Show the new movement range.
 	show_movement_cells()
@@ -571,6 +577,9 @@ func clear_unit_selection() -> void:
 	# Hide the action menu.
 	hide_action_menu()
 
+	# Disable movement selection.
+	is_movement_selection_active = false
+
 	# Clear the selected unit.
 	selected_unit = null
 
@@ -582,6 +591,9 @@ func clear_unit_selection() -> void:
 func move_selected_unit(target_cell: Vector2i) -> void:
 
 	if selected_unit == null:
+		return
+
+	if not is_movement_selection_active:
 		return
 
 	if is_unit_moving:
@@ -602,8 +614,9 @@ func move_selected_unit(target_cell: Vector2i) -> void:
 
 	var unit := selected_unit
 	
-	# Remember the position before moving.
+	# Remember the position and facing direction before moving.
 	unit.previous_map_position = unit.map_position
+	unit.previous_facing_scale_x = unit.visual_root.scale.x
 
 	# Find the shortest path to the target cell.
 	var path := pathfinding.find_path(
@@ -653,7 +666,9 @@ func _input(event: InputEvent) -> void:
 	if current_phase != BattlePhase.HERO_TURN:
 		return
 
+	# Ignore right-click input while the unit is moving.
 	if is_unit_moving:
+		get_viewport().set_input_as_handled()
 		return
 
 	# Undo the latest movement even when the mouse is over the action menu.
@@ -672,6 +687,9 @@ func _input(event: InputEvent) -> void:
 				undo_unit.move_range
 			)
 
+			# Enable movement selection after undo.
+			is_movement_selection_active = true
+
 			show_movement_cells()
 
 		get_viewport().set_input_as_handled()
@@ -679,7 +697,8 @@ func _input(event: InputEvent) -> void:
 
 	# Close the action menu if there is no movement to undo.
 	if is_action_menu_open:
-		hide_action_menu()
+		# hide_action_menu()
+		clear_unit_selection()
 		get_viewport().set_input_as_handled()
 
 
@@ -709,6 +728,9 @@ func _unhandled_input(event: InputEvent) -> void:
 						undo_unit.occupied_map_position,
 						undo_unit.move_range
 					)
+
+					# Enable movement selection after undo.
+					is_movement_selection_active = true
 
 					show_movement_cells()
 
@@ -798,6 +820,10 @@ func _unhandled_input(event: InputEvent) -> void:
 
 		if selected_unit == null:
 			return
+			
+		# Only allow movement while the movement range is active.
+		if not is_movement_selection_active:
+			return
 
 		# Do not allow a Hero to move again after it has already moved.
 		if selected_unit != null and not selected_unit.can_move():
@@ -881,6 +907,9 @@ func show_action_menu() -> void:
 
 	for child in movement_overlay.get_children():
 		child.queue_free()
+
+	# Movement selection ends when the action menu opens.
+	is_movement_selection_active = false
 
 	is_action_menu_open = true
 

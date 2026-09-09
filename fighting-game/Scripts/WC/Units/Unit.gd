@@ -55,6 +55,9 @@ var drag_offset: Vector2
 # Grid position before dragging.
 var previous_map_position: Vector2i
 
+# Horizontal facing direction before the latest movement.
+var previous_facing_scale_x: float
+
 func _ready() -> void:
 	current_hp = max_hp
 	play_animation("idle")
@@ -108,6 +111,7 @@ func undo_move() -> void:
 		return
 
 	set_map_position(previous_map_position)
+	visual_root.scale.x = previous_facing_scale_x
 
 	has_moved = false
 	can_undo_move = false
