@@ -378,6 +378,10 @@ func _process(_delta: float) -> void:
 
 
 func _on_unit_clicked(unit: Unit) -> void:
+	
+	# Keep the current information panel unchanged while the action menu is open.
+	if current_phase == BattlePhase.HERO_TURN and is_action_menu_open:
+		return
 
 	# Show the clicked unit's information.
 	unit_info_panel.show_unit(unit)
