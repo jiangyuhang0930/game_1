@@ -76,7 +76,7 @@ tracks/0/path = NodePath("Sprite2D:texture")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = {
-"times": PackedFloat32Array(0.033333335, 0.16666667, 0.3),
+"times": PackedFloat32Array(0, 0.13333334, 0.23333333),
 "transitions": PackedFloat32Array(1, 1, 1),
 "update": 1,
 "values": [ExtResource("10_d2srl"), ExtResource("11_itpjj"), ExtResource("12_7q8vp")]
@@ -216,6 +216,8 @@ _data = {
 load_path = "res://.godot/imported/Heart_Container.png-c9bc4cfbf24ef3bb8c6e7f5063a9db9a.ctex"
 
 [node name="Knight" type="CharacterBody2D" unique_id=828705993 node_paths=PackedStringArray("camera", "sword_slash_right", "sword_slash_left", "sword_slash_up", "sword_slash_down") groups=["player"]]
+collision_layer = 2
+collision_mask = 2
 script = ExtResource("1_tai8l")
 speed = 30.0
 jump_power = 70.0
@@ -391,3 +393,7 @@ texture = SubResource("CompressedTexture2D_j2gsv")
 [node name="TextureRect5" type="TextureRect" parent="HealthBar/HealthBarContainer2" unique_id=229186804]
 layout_mode = 2
 texture = SubResource("CompressedTexture2D_j2gsv")
+
+[node name="DashCooldown" type="Timer" parent="." unique_id=327490484]
+wait_time = 2.0
+one_shot = true

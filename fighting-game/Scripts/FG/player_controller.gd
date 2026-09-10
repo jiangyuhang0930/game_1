@@ -10,6 +10,7 @@ class_name PlayerController
 @export var sword_slash_up : Sprite2D
 @export var sword_slash_down : Sprite2D
 @export var melee_recoil_force: float = 4000.0
+@onready var dash_cooldown = $DashCooldown
 var speed_multiplier = 30.0
 var jump_multiplier = -30.0
 var direction = 0
@@ -44,9 +45,31 @@ func _input(event):
 		
 	if event.is_action_pressed("dash"):
 		is_dashing = true
+		if facing_right:
+			velocity.x = 1 * speed * speed_multiplier * 2.5
+		else:
+			velocity.x = -1 * speed * speed_multiplier * 2.5
+		if dash_cooldown.is_stopped():
+			set_collision_layer_value(1, false)
+			set_collision_layer_value(2, true)
+			set_collision_mask_value(1, false)
+			set_collision_mask_value(2, true)
+			$PlayerAnimator/Sprite2D.modulate.a = 0.5
+			dash_cooldown.start()
+		await get_tree().create_timer(0.25).timeout
+		is_dashing = false
+		set_collision_layer_value(1, true)
+		set_collision_layer_value(2, false)
+		set_collision_mask_value(1, true)
+		set_collision_mask_value(2, false)
+		$PlayerAnimator/Sprite2D.modulate.a = 1
+		
 
 func _physics_process(delta: float) -> void:
-	
+	if is_dashing:
+		move_and_slide()
+		return
+		
 	if health == 0:
 		get_tree().quit()
 	
@@ -121,6 +144,7 @@ func slow_down_time():
 	Engine.time_scale = 1.0
 	grounded = false
 	await get_tree().create_timer(0.25).timeout
+	$PlayerAnimator/Sprite2D.modulate = Color(1.0, 1.0, 1.0) 
 	invinsible = false
 	
 func update_hearts_container():
