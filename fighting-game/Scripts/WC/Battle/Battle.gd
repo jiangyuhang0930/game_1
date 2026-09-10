@@ -195,6 +195,7 @@ func _ready() -> void:
 	
 	# Connect the action menu buttons.
 	wait_button.pressed.connect(_on_wait_button_pressed)
+	cancel_button.pressed.connect(_on_cancel_button_pressed)
 	
 	grid_data.initialize(
 		ground_layer,
@@ -352,6 +353,16 @@ func _on_wait_button_pressed() -> void:
 
 	# Close the action menu and clear the current selection.
 	clear_unit_selection()
+
+
+func _on_cancel_button_pressed() -> void:
+	if current_phase != BattlePhase.HERO_TURN:
+		return
+
+	if is_unit_moving:
+		return
+
+	undo_selected_unit_movement()
 
 
 func _process(_delta: float) -> void:
@@ -657,6 +668,33 @@ func move_selected_unit(target_cell: Vector2i) -> void:
 	show_action_menu()
 
 
+func undo_selected_unit_movement() -> bool:
+	if selected_unit == null:
+		return false
+
+	if not selected_unit.can_undo_move:
+		return false
+
+	var undone := deployment_manager.undo_move(selected_unit)
+
+	if not undone:
+		return false
+
+	clear_undo_position()
+	hide_action_menu()
+
+	movement_cells = pathfinding.get_reachable_cells(
+		grid_data,
+		selected_unit.occupied_map_position,
+		selected_unit.move_range
+	)
+
+	is_movement_selection_active = true
+	show_movement_cells()
+
+	return true
+
+
 # Handle right-click before UI controls consume the event.
 func _input(event: InputEvent) -> void:
 
@@ -673,24 +711,7 @@ func _input(event: InputEvent) -> void:
 
 	# Undo the latest movement even when the mouse is over the action menu.
 	if selected_unit != null and selected_unit.can_undo_move:
-
-		var undo_unit := selected_unit
-		var undone := deployment_manager.undo_move(undo_unit)
-
-		if undone:
-			clear_undo_position()
-			hide_action_menu()
-
-			movement_cells = pathfinding.get_reachable_cells(
-				grid_data,
-				undo_unit.occupied_map_position,
-				undo_unit.move_range
-			)
-
-			# Enable movement selection after undo.
-			is_movement_selection_active = true
-
-			show_movement_cells()
+		undo_selected_unit_movement()
 
 		get_viewport().set_input_as_handled()
 		return
@@ -715,24 +736,7 @@ func _unhandled_input(event: InputEvent) -> void:
 
 			# Undo the latest movement if possible.
 			if selected_unit != null and selected_unit.can_undo_move:
-
-				var undo_unit := selected_unit
-				var undone := deployment_manager.undo_move(undo_unit)
-
-				if undone:
-					clear_undo_position()
-					hide_action_menu()
-
-					movement_cells = pathfinding.get_reachable_cells(
-						grid_data,
-						undo_unit.occupied_map_position,
-						undo_unit.move_range
-					)
-
-					# Enable movement selection after undo.
-					is_movement_selection_active = true
-
-					show_movement_cells()
+				undo_selected_unit_movement()
 
 			else:
 				# Otherwise, cancel the current selection.
@@ -910,6 +914,9 @@ func show_action_menu() -> void:
 
 	# Movement selection ends when the action menu opens.
 	is_movement_selection_active = false
+
+	# Only show Cancel when the latest movement can be undone.
+	cancel_button.visible = selected_unit.can_undo_move
 
 	is_action_menu_open = true
 
