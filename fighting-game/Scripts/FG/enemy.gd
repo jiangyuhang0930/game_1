@@ -1,6 +1,6 @@
 extends Node2D
 
-var health = 5
+var health = 20
 @export var area : Area2D
 
 func _process(_delta):

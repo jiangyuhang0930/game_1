@@ -369,6 +369,26 @@ texture = ExtResource("26_6rwnm")
 layout_mode = 2
 texture = ExtResource("26_6rwnm")
 
+[node name="TextureRect6" type="TextureRect" parent="HealthBar/HealthBarContainer" unique_id=769646048]
+layout_mode = 2
+texture = ExtResource("26_6rwnm")
+
+[node name="TextureRect7" type="TextureRect" parent="HealthBar/HealthBarContainer" unique_id=1403003471]
+layout_mode = 2
+texture = ExtResource("26_6rwnm")
+
+[node name="TextureRect8" type="TextureRect" parent="HealthBar/HealthBarContainer" unique_id=733877774]
+layout_mode = 2
+texture = ExtResource("26_6rwnm")
+
+[node name="TextureRect9" type="TextureRect" parent="HealthBar/HealthBarContainer" unique_id=1455535274]
+layout_mode = 2
+texture = ExtResource("26_6rwnm")
+
+[node name="TextureRect10" type="TextureRect" parent="HealthBar/HealthBarContainer" unique_id=1048913889]
+layout_mode = 2
+texture = ExtResource("26_6rwnm")
+
 [node name="HealthBarContainer2" type="HBoxContainer" parent="HealthBar" unique_id=41096102]
 offset_right = 512.0
 offset_bottom = 512.0
@@ -394,6 +414,33 @@ texture = SubResource("CompressedTexture2D_j2gsv")
 layout_mode = 2
 texture = SubResource("CompressedTexture2D_j2gsv")
 
-[node name="DashCooldown" type="Timer" parent="." unique_id=327490484]
+[node name="TextureRect6" type="TextureRect" parent="HealthBar/HealthBarContainer2" unique_id=1380910922]
+layout_mode = 2
+texture = SubResource("CompressedTexture2D_j2gsv")
+
+[node name="TextureRect7" type="TextureRect" parent="HealthBar/HealthBarContainer2" unique_id=1649122196]
+layout_mode = 2
+texture = SubResource("CompressedTexture2D_j2gsv")
+
+[node name="TextureRect8" type="TextureRect" parent="HealthBar/HealthBarContainer2" unique_id=592150423]
+layout_mode = 2
+texture = SubResource("CompressedTexture2D_j2gsv")
+
+[node name="TextureRect9" type="TextureRect" parent="HealthBar/HealthBarContainer2" unique_id=542950109]
+layout_mode = 2
+texture = SubResource("CompressedTexture2D_j2gsv")
+
+[node name="TextureRect10" type="TextureRect" parent="HealthBar/HealthBarContainer2" unique_id=1462329265]
+layout_mode = 2
+texture = SubResource("CompressedTexture2D_j2gsv")
+
+[node name="Cooldowns" type="Node2D" parent="." unique_id=481951891]
+position = Vector2(696.60004, 0)
+scale = Vector2(0.15, 0.15)
+
+[node name="DashICooldown" type="Timer" parent="Cooldowns" unique_id=327490484]
 wait_time = 2.0
+one_shot = true
+
+[node name="DashCooldown" type="Timer" parent="Cooldowns" unique_id=869704228]
 one_shot = true

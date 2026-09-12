@@ -1,7 +1,7 @@
 extends CharacterBody2D
 class_name PlayerController
-@export var health = 5
-@export var max_health = 5
+@export var health = 10
+@export var max_health = 10
 @export var speed = 10.0
 @export var jump_power = 50.0
 @export var camera : Camera2D
@@ -10,7 +10,8 @@ class_name PlayerController
 @export var sword_slash_up : Sprite2D
 @export var sword_slash_down : Sprite2D
 @export var melee_recoil_force: float = 4000.0
-@onready var dash_cooldown = $DashCooldown
+@onready var dash_cooldown = $Cooldowns/DashCooldown
+@onready var dash_i_cooldown = $Cooldowns/DashICooldown
 var speed_multiplier = 30.0
 var jump_multiplier = -30.0
 var direction = 0
@@ -43,19 +44,20 @@ func _input(event):
 	if event.is_action_pressed("switch_wc"):
 		get_tree().change_scene_to_file("res://Scenes/WC/Battle/battle.tscn")
 		
-	if event.is_action_pressed("dash"):
+	if event.is_action_pressed("dash") and dash_cooldown.is_stopped():
+		dash_cooldown.start()
 		is_dashing = true
 		if facing_right:
 			velocity.x = 1 * speed * speed_multiplier * 2.5
 		else:
 			velocity.x = -1 * speed * speed_multiplier * 2.5
-		if dash_cooldown.is_stopped():
+		if dash_i_cooldown.is_stopped():
 			set_collision_layer_value(1, false)
 			set_collision_layer_value(2, true)
 			set_collision_mask_value(1, false)
 			set_collision_mask_value(2, true)
 			$PlayerAnimator/Sprite2D.modulate.a = 0.5
-			dash_cooldown.start()
+			dash_i_cooldown.start()
 		await get_tree().create_timer(0.25).timeout
 		is_dashing = false
 		set_collision_layer_value(1, true)
@@ -66,9 +68,6 @@ func _input(event):
 		
 
 func _physics_process(delta: float) -> void:
-	if is_dashing:
-		move_and_slide()
-		return
 		
 	if health == 0:
 		get_tree().quit()
@@ -79,6 +78,9 @@ func _physics_process(delta: float) -> void:
 		
 	if is_on_floor():
 		jump_charges = 1
+	if is_dashing:
+		move_and_slide()
+		return
 	
 	if Input.is_action_pressed("attack") and !is_attacking and !grounded:
 		is_attacking = true
