@@ -48,6 +48,8 @@ tile_set = ExtResource("1_c8wje")
 [node name="Selection" type="Sprite2D" parent="Overlay" unique_id=1026572527]
 visible = false
 modulate = Color(0.14867157, 0.99999994, 0.9754761, 1)
+top_level = true
+z_index = 1
 texture = ExtResource("2_aqr0y")
 
 [node name="Grid" type="Sprite2D" parent="Overlay" unique_id=41183837]

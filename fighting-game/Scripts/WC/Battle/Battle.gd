@@ -436,7 +436,15 @@ func _process(_delta: float) -> void:
 		return
 
 	current_map_position = map_position
-	if not grid_data.can_select(map_position):
+	
+	if not grid_data.has_cell(map_position):
+		selection.visible = false
+		return
+	
+	var cell := grid_data.get_cell_from_map(map_position)
+	
+	# Do not show the selection on environment obstacles.
+	if cell.object != null:
 		selection.visible = false
 		return
 
@@ -565,7 +573,7 @@ func show_movement_cells() -> void:
 		indicator.texture = grid.texture
 
 		# Make the movement indicator smaller.
-		indicator.scale = Vector2(1, 1)
+		indicator.scale = Vector2(1.05, 1.05)
 		
 		# Make the movement range green.
 		indicator.modulate = Color(0.0, 1.0, 0.0, 0.8)
@@ -579,22 +587,24 @@ func show_movement_cells() -> void:
 # Calculate all cells inside the selected Hero's attack range.
 func get_attack_cells(hero: Hero) -> Array[Vector2i]:
 	var cells: Array[Vector2i] = []
-
 	var origin := hero.occupied_map_position
 
 	for y in range(-hero.attack_max_range, hero.attack_max_range + 1):
 		for x in range(-hero.attack_max_range, hero.attack_max_range + 1):
-
 			var target_cell := origin + Vector2i(x, y)
 			var distance: int = abs(x) + abs(y)
 
 			if distance < hero.attack_min_range:
 				continue
-
 			if distance > hero.attack_max_range:
 				continue
+			if not grid_data.has_cell(target_cell):
+				continue
 
-			if not grid_data.can_select(target_cell):
+			var cell := grid_data.get_cell_from_map(target_cell)
+
+			# Do not show attack range on environment obstacles.
+			if cell.object != null:
 				continue
 
 			cells.append(target_cell)
@@ -664,10 +674,10 @@ func show_attack_cells() -> void:
 		indicator.texture = grid.texture
 
 		# Make the attack indicator smaller.
-		indicator.scale = Vector2(1, 1)
+		indicator.scale = Vector2(1.07, 1.07)
 
 		# Make the attack range visually different.
-		indicator.modulate = Color(1.0, 0.0, 0.0, 0.5)
+		indicator.modulate = Color(1.0, 0.0, 0.0, 0.6)
 
 		# Place the indicator on the corresponding map cell.
 		indicator.position = grid_data.map_to_world(map_position)
