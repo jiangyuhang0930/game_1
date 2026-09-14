@@ -13,6 +13,7 @@
 [ext_resource type="Script" uid="uid://b6s0u7ea7we6g" path="res://Scripts/WC/Battle/DeploymentManager.gd" id="6_87egc"]
 [ext_resource type="Script" uid="uid://jpn0bnuqxv3g" path="res://Scripts/WC/Systems/Pathfinding.gd" id="7_xwls7"]
 [ext_resource type="Script" uid="uid://dfo2e343sydn7" path="res://Scripts/WC/main.gd" id="8_87egc"]
+[ext_resource type="Texture2D" uid="uid://4x7evbe4813a" path="res://Art/WC/Overlay/grid.png" id="8_sarw3"]
 [ext_resource type="Script" uid="uid://tp5rlaiwfeaf" path="res://Scripts/WC/UI/UnitInfoPanel.gd" id="11_tkbda"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_tkbda"]
@@ -49,9 +50,16 @@ visible = false
 modulate = Color(0.14867157, 0.99999994, 0.9754761, 1)
 texture = ExtResource("2_aqr0y")
 
+[node name="Grid" type="Sprite2D" parent="Overlay" unique_id=41183837]
+visible = false
+texture = ExtResource("8_sarw3")
+
 [node name="MovementOverlay" type="Node2D" parent="Overlay" unique_id=881713717]
 
 [node name="UndoOverlay" type="Node2D" parent="Overlay" unique_id=1949206934]
+
+[node name="AttackOverlay" type="Node2D" parent="Overlay" unique_id=1973706238]
+z_index = 1
 
 [node name="Units" type="Node2D" parent="." unique_id=2068894453]
 

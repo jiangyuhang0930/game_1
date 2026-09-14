@@ -29,6 +29,9 @@ var has_moved: bool = false
 ## Whether the unit can undo its latest movement.
 var can_undo_move: bool = false
 
+## Whether this unit has already attacked this turn.
+var has_attacked: bool = false
+
 ## Reference to the GridData.
 var grid_data: GridData
 
@@ -124,6 +127,7 @@ func finish_move() -> void:
 
 func reset_action() -> void:
 	has_moved = false
+	has_attacked = false
 
 
 # Move the unit along a grid path.

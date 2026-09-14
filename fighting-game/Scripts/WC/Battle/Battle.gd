@@ -8,8 +8,10 @@ extends Node2D
 
 @onready var cursor: Cursor = $UI/Cursor
 @onready var selection: Sprite2D = $Overlay/Selection
+@onready var grid: Sprite2D = $Overlay/Grid
 @onready var movement_overlay: Node2D = $Overlay/MovementOverlay
 @onready var undo_overlay: Node2D = $Overlay/UndoOverlay
+@onready var attack_overlay: Node2D = $Overlay/AttackOverlay
 var current_map_position: Vector2i = Vector2i(-999999, -999999)
 
 @onready var deployment_manager: DeploymentManager = $Managers/DeploymentManager
@@ -58,6 +60,12 @@ var movement_cells: Array[Vector2i] = []
 
 # Whether the player is currently selecting a movement destination.
 var is_movement_selection_active: bool = false
+
+# Cells currently available for the selected Hero's attack.
+var attack_cells: Array[Vector2i] = []
+
+# Whether the player is currently selecting an attack target.
+var is_attack_selection_active: bool = false
 
 # Whether a unit is currently moving.
 var is_unit_moving: bool = false
@@ -194,6 +202,7 @@ func _ready() -> void:
 	end_turn_button.visible = false
 	
 	# Connect the action menu buttons.
+	attack_button.pressed.connect(_on_attack_button_pressed)
 	wait_button.pressed.connect(_on_wait_button_pressed)
 	cancel_button.pressed.connect(_on_cancel_button_pressed)
 	
@@ -336,6 +345,37 @@ func _on_end_turn_button_pressed() -> void:
 	end_hero_turn()
 
 
+# Enter attack target selection mode.
+func _on_attack_button_pressed() -> void:
+	if current_phase != BattlePhase.HERO_TURN:
+		return
+
+	if selected_unit == null:
+		return
+
+	if not selected_unit is Hero:
+		return
+
+	if is_unit_moving:
+		return
+
+	# Close the action menu while selecting an attack target.
+	hide_action_menu()
+
+	# Stop movement selection.
+	is_movement_selection_active = false
+	movement_cells.clear()
+
+	# Calculate the selected Hero's attack range.
+	attack_cells = get_attack_cells(selected_unit as Hero)
+
+	# Enable attack target selection.
+	is_attack_selection_active = true
+
+	# Show the attack range.
+	show_attack_cells()
+
+
 # Confirm the selected Hero's movement and end its action.
 func _on_wait_button_pressed() -> void:
 
@@ -376,6 +416,20 @@ func _process(_delta: float) -> void:
 	var world_position := get_global_mouse_position()
 	var map_position := ground_layer.local_to_map(world_position)
 	# print(map_position)
+	
+	# Update the piercing attack preview based on the mouse direction.
+	if is_attack_selection_active and selected_unit is Hero:
+		var hero := selected_unit as Hero
+
+		if hero.attack_type == Hero.AttackType.PIERCE:
+			var new_attack_cells := get_pierce_attack_cells(
+				hero,
+				map_position
+			)
+
+			if new_attack_cells != attack_cells:
+				attack_cells = new_attack_cells
+				show_attack_cells()
 
 	# when mouse on grid show the select
 	if map_position == current_map_position:
@@ -392,6 +446,10 @@ func _process(_delta: float) -> void:
 
 
 func _on_unit_clicked(unit: Unit) -> void:
+	
+	# Ignore all unit clicks while selecting an attack target.
+	if current_phase == BattlePhase.HERO_TURN and is_attack_selection_active:
+		return
 	
 	# Keep the current information panel unchanged while the action menu is open.
 	if current_phase == BattlePhase.HERO_TURN and is_action_menu_open:
@@ -503,16 +561,124 @@ func show_movement_cells() -> void:
 
 		var indicator := Sprite2D.new()
 
-		# Use the existing selection texture.
-		indicator.texture = selection.texture
+		# Use the grid texture.
+		indicator.texture = grid.texture
 
 		# Make the movement indicator smaller.
-		indicator.scale = Vector2(0.8, 0.8)
+		indicator.scale = Vector2(1, 1)
+		
+		# Make the movement range green.
+		indicator.modulate = Color(0.0, 1.0, 0.0, 0.8)
 
 		# Place the indicator on the corresponding map cell.
 		indicator.position = grid_data.map_to_world(map_position)
 
 		movement_overlay.add_child(indicator)
+
+
+# Calculate all cells inside the selected Hero's attack range.
+func get_attack_cells(hero: Hero) -> Array[Vector2i]:
+	var cells: Array[Vector2i] = []
+
+	var origin := hero.occupied_map_position
+
+	for y in range(-hero.attack_max_range, hero.attack_max_range + 1):
+		for x in range(-hero.attack_max_range, hero.attack_max_range + 1):
+
+			var target_cell := origin + Vector2i(x, y)
+			var distance: int = abs(x) + abs(y)
+
+			if distance < hero.attack_min_range:
+				continue
+
+			if distance > hero.attack_max_range:
+				continue
+
+			if not grid_data.can_select(target_cell):
+				continue
+
+			cells.append(target_cell)
+
+	return cells
+
+
+# Calculate the cells affected by a piercing attack.
+func get_pierce_attack_cells(
+	hero: Hero,
+	target_cell: Vector2i
+) -> Array[Vector2i]:
+
+	var cells: Array[Vector2i] = []
+
+	var origin := hero.occupied_map_position
+	var direction := target_cell - origin
+
+	# Determine the main attack direction from the mouse position.
+	if abs(direction.x) >= abs(direction.y):
+		if direction.x > 0:
+			direction = Vector2i.RIGHT
+		elif direction.x < 0:
+			direction = Vector2i.LEFT
+		else:
+			return cells
+	else:
+		if direction.y > 0:
+			direction = Vector2i.DOWN
+		elif direction.y < 0:
+			direction = Vector2i.UP
+		else:
+			return cells
+
+	# Create the piercing attack line.
+	for distance in range(
+		hero.attack_min_range,
+		hero.attack_max_range + 1
+	):
+		var attack_cell := origin + direction * distance
+
+		# if not grid_data.can_select(attack_cell):
+			# continue
+		
+		# Ignore cells outside the playable map area.p.
+		if not grid_data.is_inside_playable_area(attack_cell):
+			continue
+
+		cells.append(attack_cell)
+
+	return cells
+
+
+# Show all cells inside the selected Hero's attack range.
+func show_attack_cells() -> void:
+
+	# Remove previous attack indicators.
+	for child in attack_overlay.get_children():
+		child.queue_free()
+
+	# Create an indicator for every attackable cell.
+	for map_position in attack_cells:
+
+		var indicator := Sprite2D.new()
+
+		# Use the grid texture.
+		indicator.texture = grid.texture
+
+		# Make the attack indicator smaller.
+		indicator.scale = Vector2(1, 1)
+
+		# Make the attack range visually different.
+		indicator.modulate = Color(1.0, 0.0, 0.0, 0.5)
+
+		# Place the indicator on the corresponding map cell.
+		indicator.position = grid_data.map_to_world(map_position)
+
+		attack_overlay.add_child(indicator)
+
+	# Hide the undo marker when its cell is covered by attack range.
+	if selected_unit != null and selected_unit.can_undo_move:
+		if attack_cells.has(selected_unit.previous_map_position):
+			for child in undo_overlay.get_children():
+				child.hide()
 
 
 # Show the cell the unit can return to.
@@ -584,6 +750,13 @@ func clear_unit_selection() -> void:
 	# Remove all movement indicators.
 	for child in movement_overlay.get_children():
 		child.queue_free()
+	
+	# Remove all attack indicators.
+	for child in attack_overlay.get_children():
+		child.queue_free()
+
+	attack_cells.clear()
+	is_attack_selection_active = false
 
 	# Hide the action menu.
 	hide_action_menu()
@@ -596,6 +769,27 @@ func clear_unit_selection() -> void:
 
 	# Clear the cached movement cells.
 	movement_cells.clear()
+
+
+# Cancel attack target selection and return to the action menu.
+func cancel_attack_selection() -> void:
+
+	# Remove attack indicators.
+	for child in attack_overlay.get_children():
+		child.queue_free()
+
+	attack_cells.clear()
+
+	# Disable attack selection.
+	is_attack_selection_active = false
+
+	# Restore the undo marker if the latest movement can still be undone.
+	if selected_unit != null and selected_unit.can_undo_move:
+		for child in undo_overlay.get_children():
+			child.show()
+
+	# Return to the action menu.
+	show_action_menu()
 
 
 # Move the selected unit to the target cell.
@@ -704,6 +898,12 @@ func _input(event: InputEvent) -> void:
 	if current_phase != BattlePhase.HERO_TURN:
 		return
 
+	# Cancel attack target selection first.
+	if is_attack_selection_active:
+		cancel_attack_selection()
+		get_viewport().set_input_as_handled()
+		return
+
 	# Ignore right-click input while the unit is moving.
 	if is_unit_moving:
 		get_viewport().set_input_as_handled()
@@ -778,6 +978,10 @@ func _unhandled_input(event: InputEvent) -> void:
 			
 		# Ignore map input while the action menu is open.
 		if is_action_menu_open:
+			return
+
+		# Ignore map input while selecting an attack target.
+		if is_attack_selection_active:
 			return
 
 		if is_unit_moving:

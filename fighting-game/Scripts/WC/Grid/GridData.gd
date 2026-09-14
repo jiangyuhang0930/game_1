@@ -98,8 +98,19 @@ func can_select(map_position: Vector2i) -> bool:
 
 	# A blocked cell cannot be selected.
 	return not cell.obstacle
-	
-	
+
+
+# Check whether a cell is inside the playable map bounds.
+func is_inside_playable_area(map_position: Vector2i) -> bool:
+
+	return (
+		map_position.x >= min_walkable_x
+		and map_position.x <= max_walkable_x
+		and map_position.y >= min_walkable_y
+		and map_position.y <= max_walkable_y
+	)
+
+
 # Check whether a cell is currently blocked.
 func is_obstacle(map_position: Vector2i) -> bool:
 
