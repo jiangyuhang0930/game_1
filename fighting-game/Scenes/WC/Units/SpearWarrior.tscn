@@ -254,7 +254,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_73bmm")
 }],
-"loop": true,
+"loop": false,
 "name": &"attack",
 "speed": 5.0
 }, {
@@ -307,7 +307,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_r3ooj")
 }],
-"loop": true,
+"loop": false,
 "name": &"death",
 "speed": 5.0
 }, {
@@ -385,7 +385,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_7yfhx")
 }],
-"loop": true,
+"loop": false,
 "name": &"take_hit",
 "speed": 5.0
 }]
@@ -395,6 +395,9 @@ size = Vector2(16, 15.5)
 
 [node name="Unit" unique_id=638368485 instance=ExtResource("1_l0h3q")]
 script = ExtResource("2_la54m")
+attack_type = 0
+attack_min_range = 1
+attack_max_range = 1
 unit_name = "SpearWarrior"
 portrait = ExtResource("3_vavu0")
 

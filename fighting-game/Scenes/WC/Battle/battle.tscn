@@ -15,6 +15,7 @@
 [ext_resource type="Script" uid="uid://dfo2e343sydn7" path="res://Scripts/WC/main.gd" id="8_87egc"]
 [ext_resource type="Texture2D" uid="uid://4x7evbe4813a" path="res://Art/WC/Overlay/grid.png" id="8_sarw3"]
 [ext_resource type="Script" uid="uid://tp5rlaiwfeaf" path="res://Scripts/WC/UI/UnitInfoPanel.gd" id="11_tkbda"]
+[ext_resource type="Script" uid="uid://16a7qae4ehhv" path="res://Scripts/WC/Systems/AttackSystem.gd" id="12_3psjl"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_tkbda"]
 
@@ -75,6 +76,9 @@ script = ExtResource("6_87egc")
 
 [node name="Pathfinding" type="Node" parent="Managers" unique_id=792066810]
 script = ExtResource("7_xwls7")
+
+[node name="AttackSystem" type="Node" parent="Managers" unique_id=1913150973]
+script = ExtResource("12_3psjl")
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=1375894524]
 zoom = Vector2(4, 4)

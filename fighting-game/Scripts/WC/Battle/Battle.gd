@@ -16,6 +16,8 @@ var current_map_position: Vector2i = Vector2i(-999999, -999999)
 
 @onready var deployment_manager: DeploymentManager = $Managers/DeploymentManager
 @onready var pathfinding: Pathfinding = $Managers/Pathfinding
+@onready var attack_system: AttackSystem = $Managers/AttackSystem
+
 @onready var unit_info_panel: Control = $UI/UnitInfoPanel
 @onready var end_turn_button: Button = $UI/EndTurnButton
 
@@ -213,6 +215,9 @@ func _ready() -> void:
 	)
 	selection.visible = true
 	
+	# Initialize the attack system with the current grid.
+	attack_system.initialize(grid_data)
+	
 	# Initialize deployment system.
 	deployment_manager.initialize(grid_data)
 	
@@ -278,6 +283,7 @@ func start_hero_turn() -> void:
 	for hero in heroes:
 		hero.reset_action()
 		hero.can_undo_move = false
+		hero.update_grass_transparency()
 
 	# Clear any previous selection and undo marker.
 	clear_unit_selection()
@@ -298,6 +304,7 @@ func end_hero_turn() -> void:
 	# Confirm the current unit's movement.
 	if selected_unit != null and selected_unit.can_undo_move:
 		selected_unit.can_undo_move = false
+		selected_unit.update_grass_transparency()
 
 	clear_undo_position()
 	clear_unit_selection()
@@ -367,7 +374,7 @@ func _on_attack_button_pressed() -> void:
 	movement_cells.clear()
 
 	# Calculate the selected Hero's attack range.
-	attack_cells = get_attack_cells(selected_unit as Hero)
+	attack_cells = attack_system.get_attack_cells(selected_unit as Hero)
 
 	# Enable attack target selection.
 	is_attack_selection_active = true
@@ -387,6 +394,9 @@ func _on_wait_button_pressed() -> void:
 
 	# Confirm the latest movement so it can no longer be undone.
 	selected_unit.can_undo_move = false
+
+	# Update the unit's appearance after confirming the movement.
+	selected_unit.update_grass_transparency()
 
 	# Remove the undo marker.
 	clear_undo_position()
@@ -422,7 +432,7 @@ func _process(_delta: float) -> void:
 		var hero := selected_unit as Hero
 
 		if hero.attack_type == Hero.AttackType.PIERCE:
-			var new_attack_cells := get_pierce_attack_cells(
+			var new_attack_cells := attack_system.get_pierce_attack_cells(
 				hero,
 				map_position
 			)
@@ -485,6 +495,7 @@ func _on_unit_clicked(unit: Unit) -> void:
 
 			if selected_unit.can_undo_move:
 				selected_unit.can_undo_move = false
+				selected_unit.update_grass_transparency()
 				clear_undo_position()
 
 			# Clear the old Hero's movement range.
@@ -494,15 +505,23 @@ func _on_unit_clicked(unit: Unit) -> void:
 		if not unit is Hero:
 			return
 		
+		# A Hero that has completed both actions cannot be selected again this turn.
+		if unit.has_finished_action():
+			return
+		
 		# A Hero that has already moved can open the action menu immediately.
 		if unit.has_moved:
 			selected_unit = unit
 			show_action_menu()
 			return
-			
-		# Clicking the currently selected Hero opens the action menu.
+
+		# Clicking the currently selected Hero again opens the action menu
+		# only when the movement range is already active.
 		if selected_unit == unit:
-			show_action_menu()
+			if is_movement_selection_active:
+				show_action_menu()
+			else:
+				select_hero_for_action(unit)
 			return
 
 		# Select the clicked Hero.
@@ -582,80 +601,6 @@ func show_movement_cells() -> void:
 		indicator.position = grid_data.map_to_world(map_position)
 
 		movement_overlay.add_child(indicator)
-
-
-# Calculate all cells inside the selected Hero's attack range.
-func get_attack_cells(hero: Hero) -> Array[Vector2i]:
-	var cells: Array[Vector2i] = []
-	var origin := hero.occupied_map_position
-
-	for y in range(-hero.attack_max_range, hero.attack_max_range + 1):
-		for x in range(-hero.attack_max_range, hero.attack_max_range + 1):
-			var target_cell := origin + Vector2i(x, y)
-			var distance: int = abs(x) + abs(y)
-
-			if distance < hero.attack_min_range:
-				continue
-			if distance > hero.attack_max_range:
-				continue
-			if not grid_data.has_cell(target_cell):
-				continue
-
-			var cell := grid_data.get_cell_from_map(target_cell)
-
-			# Do not show attack range on environment obstacles.
-			if cell.object != null:
-				continue
-
-			cells.append(target_cell)
-
-	return cells
-
-
-# Calculate the cells affected by a piercing attack.
-func get_pierce_attack_cells(
-	hero: Hero,
-	target_cell: Vector2i
-) -> Array[Vector2i]:
-
-	var cells: Array[Vector2i] = []
-
-	var origin := hero.occupied_map_position
-	var direction := target_cell - origin
-
-	# Determine the main attack direction from the mouse position.
-	if abs(direction.x) >= abs(direction.y):
-		if direction.x > 0:
-			direction = Vector2i.RIGHT
-		elif direction.x < 0:
-			direction = Vector2i.LEFT
-		else:
-			return cells
-	else:
-		if direction.y > 0:
-			direction = Vector2i.DOWN
-		elif direction.y < 0:
-			direction = Vector2i.UP
-		else:
-			return cells
-
-	# Create the piercing attack line.
-	for distance in range(
-		hero.attack_min_range,
-		hero.attack_max_range + 1
-	):
-		var attack_cell := origin + direction * distance
-
-		# if not grid_data.can_select(attack_cell):
-			# continue
-		
-		# Ignore cells outside the playable map area.p.
-		if not grid_data.is_inside_playable_area(attack_cell):
-			continue
-
-		cells.append(attack_cell)
-
-	return cells
 
 
 # Show all cells inside the selected Hero's attack range.
@@ -800,6 +745,56 @@ func cancel_attack_selection() -> void:
 
 	# Return to the action menu.
 	show_action_menu()
+
+
+# Handle a cell click while selecting an attack target.
+func select_attack_target(target_cell: Vector2i) -> void:
+
+	if selected_unit == null:
+		return
+
+	if not selected_unit is Hero:
+		return
+
+	var hero := selected_unit as Hero
+
+	# The clicked cell must be inside the current attack selection.
+	if hero.attack_type != Hero.AttackType.PIERCE:
+		if not attack_cells.has(target_cell):
+			return
+
+	# Calculate the cells affected by this attack.
+	var target_cells := attack_system.get_target_cells(
+		hero,
+		target_cell
+	)
+
+	# Find all valid enemy targets inside the affected cells.
+	var targets := attack_system.get_attack_targets(
+		target_cells
+	)
+
+	# Do nothing if there are no valid enemies.
+	# The attack selection remains active.
+	if targets.is_empty():
+		return
+
+	# Remove the attack range before the attack animation starts.
+	for child in attack_overlay.get_children():
+		child.queue_free()
+
+	attack_cells.clear()
+	is_attack_selection_active = false
+	
+	# Execute the attack and wait until the animation finishes.
+	await attack_system.execute_attack(hero, targets)
+	
+	# An attack cannot be undone, so confirm the latest movement.
+	hero.can_undo_move = false
+	clear_undo_position()
+	
+	# Update the Hero's appearance after the attack.
+	hero.update_grass_transparency()
 
 
 # Move the selected unit to the target cell.
@@ -990,8 +985,20 @@ func _unhandled_input(event: InputEvent) -> void:
 		if is_action_menu_open:
 			return
 
-		# Ignore map input while selecting an attack target.
+		# Handle attack target selection.
 		if is_attack_selection_active:
+
+			if not event.is_action_pressed("left_click"):
+				return
+
+			var attack_mouse_world := get_global_mouse_position()
+			var attack_target_cell := ground_layer.local_to_map(
+				attack_mouse_world
+			)
+
+			select_attack_target(attack_target_cell)
+
+			get_viewport().set_input_as_handled()
 			return
 
 		if is_unit_moving:
@@ -1034,6 +1041,7 @@ func _unhandled_input(event: InputEvent) -> void:
 
 		if selected_unit != null and selected_unit.can_undo_move:
 			selected_unit.can_undo_move = false
+			selected_unit.update_grass_transparency()
 			clear_undo_position()
 
 		if selected_unit == null:
@@ -1131,6 +1139,9 @@ func show_action_menu() -> void:
 
 	# Only show Cancel when the latest movement can be undone.
 	cancel_button.visible = selected_unit.can_undo_move
+	
+	# Hide Attack after the unit has already attacked this turn.
+	attack_button.visible = not selected_unit.has_attacked
 
 	is_action_menu_open = true
 
@@ -1143,4 +1154,5 @@ func show_action_menu() -> void:
 
 func hide_action_menu() -> void:
 	is_action_menu_open = false
+	attack_button.visible = true
 	action_panel.hide()

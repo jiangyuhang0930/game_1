@@ -215,7 +215,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_0ifea")
 }],
-"loop": true,
+"loop": false,
 "name": &"attack",
 "speed": 5.0
 }, {
@@ -256,7 +256,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_rufho")
 }],
-"loop": true,
+"loop": false,
 "name": &"death",
 "speed": 5.0
 }, {
@@ -322,7 +322,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_woyd0")
 }],
-"loop": true,
+"loop": false,
 "name": &"take_hit",
 "speed": 5.0
 }]
@@ -333,6 +333,9 @@ size = Vector2(23, 20)
 [node name="Unit" unique_id=638368485 instance=ExtResource("1_10m6b")]
 scale = Vector2(0.65, 0.65)
 script = ExtResource("2_0hyc2")
+attack_type = 0
+attack_min_range = 1
+attack_max_range = 1
 unit_name = "HellfireRhino"
 portrait = ExtResource("3_lrf50")
 
@@ -340,8 +343,7 @@ portrait = ExtResource("3_lrf50")
 position = Vector2(-1, -11)
 scale = Vector2(0.4, 0.4)
 sprite_frames = SubResource("SpriteFrames_k1p6f")
-animation = &"take_hit"
-frame_progress = 0.11883246
+animation = &"idle"
 
 [node name="CollisionShape2D" parent="ClickArea" parent_id_path=PackedInt32Array(1699749257) index="0" unique_id=1171996678]
 position = Vector2(0.5, 0)

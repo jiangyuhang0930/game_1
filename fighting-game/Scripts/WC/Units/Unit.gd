@@ -84,6 +84,13 @@ func play_animation(animation_name: String) -> void:
 	if sprite.sprite_frames.has_animation(animation_name):
 		sprite.play(animation_name)
 
+func play_animation_and_wait(animation_name: String) -> void:
+	if not sprite.sprite_frames.has_animation(animation_name):
+		return
+
+	sprite.play(animation_name)
+	await sprite.animation_finished
+
 #func update_world_position() -> void:
 #	if grid_data == null:
 #		return
@@ -109,6 +116,11 @@ func can_move() -> bool:
 	return not has_moved
 
 
+# Check whether this unit has completed both actions and confirmed its movement.
+func has_finished_action() -> bool:
+	return has_moved and has_attacked and not can_undo_move
+
+
 func undo_move() -> void:
 	if not can_undo_move:
 		return
@@ -118,6 +130,9 @@ func undo_move() -> void:
 
 	has_moved = false
 	can_undo_move = false
+	
+	# Update the unit's appearance after undoing the movement.
+	update_grass_transparency()
 
 
 func finish_move() -> void:
@@ -207,10 +222,23 @@ func update_grass_transparency() -> void:
 
 	var cell := grid_data.get_cell_from_map(map_position)
 
+	var alpha := 1.0
+
 	if cell.terrain is GrassData:
-		visual_root.modulate.a = 0.5
-	else:
-		visual_root.modulate.a = 1.0
+		alpha = 0.5
+
+	# Make the unit gray after completing both movement and attack.
+	var brightness := 1.0
+
+	if has_finished_action():
+		brightness = 0.5
+
+	visual_root.modulate = Color(
+		brightness,
+		brightness,
+		brightness,
+		alpha
+	)
 
 
 func _on_click_area_input_event(
@@ -226,3 +254,14 @@ func _on_click_area_input_event(
 
 		# Prevent the same click from being treated as a movement command.
 		get_viewport().set_input_as_handled()
+
+
+# Attack and Damage
+
+# Apply damage to this unit.
+func take_damage(amount: int) -> void:
+	current_hp -= amount
+	current_hp = max(current_hp, 0)
+
+	# Print the remaining HP for testing.
+	print(unit_name, " HP: ", current_hp)
