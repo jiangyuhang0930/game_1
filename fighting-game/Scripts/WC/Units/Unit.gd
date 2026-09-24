@@ -17,6 +17,9 @@ var occupied_map_position: Vector2i
 ## Current health of this unit.
 var current_hp: int
 
+## Whether this unit has already died.
+var is_dead: bool = false
+
 ## Display name of this unit.
 @export var unit_name: String = "Unit"
 
@@ -90,6 +93,47 @@ func play_animation_and_wait(animation_name: String) -> void:
 
 	sprite.play(animation_name)
 	await sprite.animation_finished
+
+# Play the death animation and wait until it finishes.
+func play_death_animation() -> void:
+	if is_dead:
+		return
+
+	is_dead = true
+
+	# Play the death animation.
+	await play_animation_and_wait("death")
+
+# Play the hit reaction, flash white, and return to idle.
+func play_hit_reaction() -> void:
+	# Start the white flash without blocking the hit animation.
+	flash_white()
+
+	# Play the hit reaction animation.
+	await play_animation_and_wait("take_hit")
+
+	# Return to idle after the hit reaction finishes.
+	play_animation("idle")
+
+# Flash the unit white briefly when receiving damage.
+func flash_white() -> void:
+	var original_modulate := visual_root.modulate
+
+	# Flash white.
+	visual_root.modulate = Color.WHITE
+
+	# Wait briefly.
+	await get_tree().create_timer(0.08).timeout
+
+	# Restore the original appearance.
+	visual_root.modulate = original_modulate
+
+# Face the target direction before attacking.
+func face_toward_map_position(target_map_position: Vector2i) -> void:
+	if target_map_position.x > occupied_map_position.x:
+		visual_root.scale.x = abs(visual_root.scale.x)
+	elif target_map_position.x < occupied_map_position.x:
+		visual_root.scale.x = -abs(visual_root.scale.x)
 
 #func update_world_position() -> void:
 #	if grid_data == null:
@@ -259,9 +303,13 @@ func _on_click_area_input_event(
 # Attack and Damage
 
 # Apply damage to this unit.
-func take_damage(amount: int) -> void:
+func take_damage(amount: int) -> bool:
+	if is_dead:
+		return true
+
 	current_hp -= amount
 	current_hp = max(current_hp, 0)
 
-	# Print the remaining HP for testing.
 	print(unit_name, " HP: ", current_hp)
+
+	return current_hp <= 0

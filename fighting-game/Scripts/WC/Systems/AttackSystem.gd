@@ -5,14 +5,17 @@ class_name AttackSystem
 # Reference to the grid data used to read map and cell information.
 var grid_data: GridData
 
+# Reference to the current Battle.
+var battle: Node
 
 # ------------------------------------------------------------------
 # Initialization
 # ------------------------------------------------------------------
 
 # Initialize the AttackSystem with the current battle grid.
-func initialize(grid: GridData) -> void:
+func initialize(grid: GridData, current_battle: Node) -> void:
 	grid_data = grid
+	battle = current_battle
 
 
 # ------------------------------------------------------------------
@@ -131,7 +134,6 @@ func get_attack_targets(
 	return targets
 
 
-# Execute an attack against the specified enemy targets.
 func execute_attack(hero: Hero, targets: Array[Enemy]) -> void:
 	if hero.has_attacked:
 		return
@@ -141,9 +143,36 @@ func execute_attack(hero: Hero, targets: Array[Enemy]) -> void:
 	# Play the attack animation.
 	await hero.play_animation_and_wait("attack")
 
-	# Apply damage after the attack animation finishes.
+	# Start the hit reaction for all targets at the same time.
 	for target in targets:
-		target.take_damage(1)
+		target.play_hit_reaction()
+
+	# Wait until all hit reactions have finished.
+	for target in targets:
+		if target.sprite.animation == "take_hit":
+			await target.sprite.animation_finished
+
+	# Apply damage to all targets.
+	var dead_targets: Array[Enemy] = []
+
+	for target in targets:
+		var target_died: bool = target.take_damage(4)
+
+		if target_died:
+			dead_targets.append(target)
+
+	# Start all death animations at the same time.
+	for target in dead_targets:
+		target.play_death_animation()
+
+	# Wait until all death animations have finished.
+	for target in dead_targets:
+		if target.sprite.animation == "death":
+			await target.sprite.animation_finished
+	
+	# Remove defeated units after their death animations finish.
+	for target in dead_targets:
+		battle.remove_dead_unit(target)
 
 	# Return the attacker to idle.
 	hero.play_animation("idle")

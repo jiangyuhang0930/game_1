@@ -69,6 +69,9 @@ var attack_cells: Array[Vector2i] = []
 # Whether the player is currently selecting an attack target.
 var is_attack_selection_active: bool = false
 
+# Whether an attack animation is currently being executed.
+var is_unit_attacking: bool = false
+
 # Whether a unit is currently moving.
 var is_unit_moving: bool = false
 
@@ -196,6 +199,26 @@ func create_goblin(start_position: Vector2i) -> Goblin:
 	return goblin
 
 
+# Remove a defeated unit from the battle.
+func remove_dead_unit(unit: Unit) -> void:
+
+	# Release the grid cell occupied by the defeated unit.
+	grid_data.release_cell(unit.occupied_map_position)
+
+	# Remove the unit from the corresponding battle list.
+	if unit is Hero:
+		heroes.erase(unit)
+	elif unit is Enemy:
+		enemies.erase(unit)
+
+	# Clear the current selection if the defeated unit was selected.
+	if selected_unit == unit:
+		clear_unit_selection()
+
+	# Remove the unit from the scene.
+	unit.queue_free()
+
+
 func _ready() -> void:
 	Input.mouse_mode = Input.MOUSE_MODE_HIDDEN
 	
@@ -215,8 +238,8 @@ func _ready() -> void:
 	)
 	selection.visible = true
 	
-	# Initialize the attack system with the current grid.
-	attack_system.initialize(grid_data)
+	# Initialize the attack system with the current grid and Battle reference.
+	attack_system.initialize(grid_data, self)
 	
 	# Initialize deployment system.
 	deployment_manager.initialize(grid_data)
@@ -239,6 +262,8 @@ func _ready() -> void:
 	create_hellfire_rhino(Vector2i(-9, 3))
 	
 	create_goblin(Vector2i(7, -4))
+	create_goblin(Vector2i(-5, 1))
+	create_goblin(Vector2i(-5, 0))
 	
 
 # ------------------------------------------------------------------
@@ -464,6 +489,10 @@ func _process(_delta: float) -> void:
 
 
 func _on_unit_clicked(unit: Unit) -> void:
+	
+	# Ignore unit clicks while an attack is being executed.
+	if is_unit_attacking:
+		return
 	
 	# Ignore all unit clicks while selecting an attack target.
 	if current_phase == BattlePhase.HERO_TURN and is_attack_selection_active:
@@ -763,6 +792,10 @@ func select_attack_target(target_cell: Vector2i) -> void:
 		if not attack_cells.has(target_cell):
 			return
 
+	# Prevent new attack commands while another attack is being executed.
+	if is_unit_attacking:
+		return
+
 	# Calculate the cells affected by this attack.
 	var target_cells := attack_system.get_target_cells(
 		hero,
@@ -779,6 +812,9 @@ func select_attack_target(target_cell: Vector2i) -> void:
 	if targets.is_empty():
 		return
 
+	# Face the selected attack direction before the attack animation starts.
+	hero.face_toward_map_position(target_cell)
+
 	# Remove the attack range before the attack animation starts.
 	for child in attack_overlay.get_children():
 		child.queue_free()
@@ -786,8 +822,14 @@ func select_attack_target(target_cell: Vector2i) -> void:
 	attack_cells.clear()
 	is_attack_selection_active = false
 	
+	# Lock unit input while the attack is being executed.
+	is_unit_attacking = true
+
 	# Execute the attack and wait until the animation finishes.
 	await attack_system.execute_attack(hero, targets)
+
+	# Unlock unit input after the attack is completed.
+	is_unit_attacking = false
 	
 	# An attack cannot be undone, so confirm the latest movement.
 	hero.can_undo_move = false
@@ -896,6 +938,11 @@ func undo_selected_unit_movement() -> bool:
 
 # Handle right-click before UI controls consume the event.
 func _input(event: InputEvent) -> void:
+	
+	# Ignore input while an attack is being executed.
+	if is_unit_attacking:
+		get_viewport().set_input_as_handled()
+		return
 
 	if not event.is_action_pressed("right_click"):
 		return
@@ -929,6 +976,11 @@ func _input(event: InputEvent) -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
+	
+	# Ignore input while an attack is being executed.
+	if is_unit_attacking:
+		get_viewport().set_input_as_handled()
+		return
 
 	# --------------------------------------------------------------
 	# Right click
