@@ -229,6 +229,7 @@ sword_slash_down = NodePath("SwordSlashDown")
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=986295408]
 position = Vector2(268, 171)
+offset = Vector2(0, -300)
 zoom = Vector2(0.53, 0.53)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1347495003]

@@ -3,15 +3,18 @@
 [ext_resource type="Script" uid="uid://ddahrq08gd8k3" path="res://Scripts/FG/enemy.gd" id="1_qtr51"]
 [ext_resource type="Texture2D" uid="uid://dyb5kkmugvdnb" path="res://Art/FG/enemy/_Run.png" id="2_2685o"]
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_byh2l"]
+size = Vector2(127.437485, 222)
+
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_2685o"]
-size = Vector2(121.499985, 232.5)
+size = Vector2(143.74997, 232.5)
 
 [sub_resource type="Animation" id="Animation_2685o"]
 length = 0.001
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
-tracks/0/path = NodePath("Sprite2D:region_rect")
+tracks/0/path = NodePath("CharacterBody2D/Sprite2D:region_rect")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = {
@@ -28,7 +31,7 @@ loop_mode = 1
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
-tracks/0/path = NodePath("Sprite2D:region_rect")
+tracks/0/path = NodePath("CharacterBody2D/Sprite2D:region_rect")
 tracks/0/interp = 0
 tracks/0/loop_wrap = true
 tracks/0/keys = {
@@ -45,7 +48,7 @@ loop_mode = 1
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
-tracks/0/path = NodePath("Sprite2D:region_rect")
+tracks/0/path = NodePath("CharacterBody2D/Sprite2D:region_rect")
 tracks/0/interp = 0
 tracks/0/loop_wrap = true
 tracks/0/keys = {
@@ -62,14 +65,18 @@ _data = {
 &"run": SubResource("Animation_d2rol")
 }
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_byh2l"]
-size = Vector2(104.87499, 222)
+[node name="Enemy" type="Node2D" unique_id=1138559623]
 
-[node name="Enemy" type="Node2D" unique_id=1138559623 node_paths=PackedStringArray("area")]
+[node name="CharacterBody2D" type="CharacterBody2D" parent="." unique_id=1871321197 node_paths=PackedStringArray("area_1")]
 script = ExtResource("1_qtr51")
-area = NodePath("Area2D")
+area_1 = NodePath("Area2D")
 
-[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1519903756]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="CharacterBody2D" unique_id=1829733210]
+position = Vector2(92.71876, 115)
+scale = Vector2(1.0000001, 1)
+shape = SubResource("RectangleShape2D_byh2l")
+
+[node name="Sprite2D" type="Sprite2D" parent="CharacterBody2D" unique_id=1519903756]
 texture_filter = 1
 position = Vector2(99, -13)
 scale = Vector2(5.808333, 6.1000004)
@@ -78,24 +85,22 @@ flip_h = true
 region_enabled = true
 region_rect = Rect2(0, 0, 120, 80)
 
-[node name="Area2D" type="Area2D" parent="." unique_id=6342025]
+[node name="Area2D" type="Area2D" parent="CharacterBody2D" unique_id=6342025]
 position = Vector2(-7.6293945e-06, 9.536743e-07)
 scale = Vector2(1.0000001, 1)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D" unique_id=1671321]
-position = Vector2(103.999985, 115)
+[node name="CollisionShape2D" type="CollisionShape2D" parent="CharacterBody2D/Area2D" unique_id=1671321]
+position = Vector2(92.875, 115)
 shape = SubResource("RectangleShape2D_2685o")
 
-[node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=137587204]
+[node name="AnimationPlayer" type="AnimationPlayer" parent="CharacterBody2D" unique_id=137587204]
+root_node = NodePath("../..")
 libraries/ = SubResource("AnimationLibrary_d2rol")
 autoplay = &"idle"
 
-[node name="CharacterBody2D" type="CharacterBody2D" parent="." unique_id=1871321197]
+[node name="DashTimer" type="Timer" parent="CharacterBody2D" unique_id=1137505019]
+wait_time = 5.0
+one_shot = true
+autostart = true
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="CharacterBody2D" unique_id=1829733210]
-position = Vector2(105, 114)
-scale = Vector2(1.0000001, 1)
-shape = SubResource("RectangleShape2D_byh2l")
-
-[connection signal="area_entered" from="Area2D" to="." method="_on_area_2d_area_entered"]
-[connection signal="body_entered" from="Area2D" to="." method="_on_area_2d_body_entered"]
+[connection signal="area_entered" from="CharacterBody2D/Area2D" to="CharacterBody2D" method="_on_area_2d_area_entered"]

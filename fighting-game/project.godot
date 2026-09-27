@@ -8,6 +8,8 @@
 
 config_version=5
 
+AKA,Fightcraft,Shamrock,Darkhorse,herosmartialartconfig_version=5
+
 [application]
 
 config/name="Fighting Game"
@@ -88,3 +90,4 @@ down={
 rendering_device/driver.windows="d3d12"
 renderer/rendering_method="gl_compatibility"
 renderer/rendering_method.mobile="gl_compatibility"
+environment/defaults/default_clear_color=Color(0.13137859, 0.13137859, 0.13137853, 1)

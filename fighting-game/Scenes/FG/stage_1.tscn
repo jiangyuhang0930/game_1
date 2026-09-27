@@ -5,9 +5,15 @@
 [ext_resource type="Texture2D" uid="uid://b2418djw0h16i" path="res://Art/FG/enviornment/pillar.png" id="3_us22l"]
 [ext_resource type="Texture2D" uid="uid://x0vk8bm83fb3" path="res://Art/FG/enviornment/pillar_base_t.png" id="4_ow18i"]
 [ext_resource type="PackedScene" uid="uid://bs3v4t3xi47pf" path="res://Scenes/FG/enemy.tscn" id="5_qrwsy"]
+[ext_resource type="Texture2D" uid="uid://05k7y4qmv070" path="res://Art/FG/enviornment/ceiling.png" id="6_0kkg6"]
+[ext_resource type="Texture2D" uid="uid://4pe40xbgo5ey" path="res://Art/FG/enviornment/door_t.png" id="7_7ktsu"]
+[ext_resource type="Texture2D" uid="uid://cxx7n23u0ir4n" path="res://Art/FG/enviornment/torch.png" id="8_7ktsu"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ial8x"]
 size = Vector2(6047.25, 513.5)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_jkxju"]
+size = Vector2(11112, 385)
 
 [node name="Stage1" type="Node2D" unique_id=534365376]
 
@@ -75,75 +81,82 @@ texture = ExtResource("4_ow18i")
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Pillar" unique_id=88667769]
 polygon = PackedVector2Array(-387, 246, 4, 245, -64, 159, -73, -1002, -11, -1076, -365, -1076, -295, -1000, -294, 159)
 
-[node name="RigidBody2D" type="RigidBody2D" parent="." unique_id=1034121807]
+[node name="Floor" type="RigidBody2D" parent="." unique_id=1034121807]
 collision_layer = 3
 collision_mask = 3
 freeze = true
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="RigidBody2D" unique_id=1672906469]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Floor" unique_id=1672906469]
 position = Vector2(3341.375, 904)
 shape = SubResource("RectangleShape2D_ial8x")
 
-[node name="Wall6" type="Sprite2D" parent="RigidBody2D" unique_id=639745824]
+[node name="Wall6" type="Sprite2D" parent="Floor" unique_id=639745824]
 texture_filter = 1
 position = Vector2(941, 942.99994)
 scale = Vector2(15.525, 18.25)
 texture = ExtResource("1_v1qfn")
 
-[node name="Wall13" type="Sprite2D" parent="RigidBody2D" unique_id=237832508]
+[node name="Wall13" type="Sprite2D" parent="Floor" unique_id=237832508]
 texture_filter = 1
 position = Vector2(-259, 943)
 scale = Vector2(15.525, 18.25)
 texture = ExtResource("1_v1qfn")
 
-[node name="Wall14" type="Sprite2D" parent="RigidBody2D" unique_id=1735693056]
+[node name="Wall14" type="Sprite2D" parent="Floor" unique_id=1735693056]
 texture_filter = 1
 position = Vector2(-1459, 943)
 scale = Vector2(15.525, 18.25)
 texture = ExtResource("1_v1qfn")
 
-[node name="Wall7" type="Sprite2D" parent="RigidBody2D" unique_id=2118596627]
+[node name="Wall7" type="Sprite2D" parent="Floor" unique_id=2118596627]
 texture_filter = 1
 position = Vector2(2141, 942.99994)
 scale = Vector2(15.525, 18.25)
 texture = ExtResource("1_v1qfn")
 
-[node name="Wall8" type="Sprite2D" parent="RigidBody2D" unique_id=538889070]
+[node name="Wall8" type="Sprite2D" parent="Floor" unique_id=538889070]
 texture_filter = 1
 position = Vector2(3341, 942.99994)
 scale = Vector2(15.525, 18.25)
 texture = ExtResource("1_v1qfn")
 
-[node name="Wall9" type="Sprite2D" parent="RigidBody2D" unique_id=341709895]
+[node name="Wall9" type="Sprite2D" parent="Floor" unique_id=341709895]
 texture_filter = 1
 position = Vector2(4541, 942.99994)
 scale = Vector2(15.525, 18.25)
 texture = ExtResource("1_v1qfn")
 
-[node name="Wall10" type="Sprite2D" parent="RigidBody2D" unique_id=366309893]
+[node name="Wall10" type="Sprite2D" parent="Floor" unique_id=366309893]
 texture_filter = 1
 position = Vector2(5741, 942.99994)
 scale = Vector2(15.525, 18.25)
 texture = ExtResource("1_v1qfn")
 
-[node name="Wall11" type="Sprite2D" parent="RigidBody2D" unique_id=828003867]
+[node name="Wall11" type="Sprite2D" parent="Floor" unique_id=828003867]
 texture_filter = 1
 position = Vector2(6941.2, 943)
 scale = Vector2(15.525, 18.25)
 texture = ExtResource("1_v1qfn")
 
-[node name="Wall12" type="Sprite2D" parent="RigidBody2D" unique_id=1303682079]
+[node name="Wall12" type="Sprite2D" parent="Floor" unique_id=1303682079]
 texture_filter = 1
 position = Vector2(8141.2, 943)
 scale = Vector2(15.525, 18.25)
 texture = ExtResource("1_v1qfn")
 
-[node name="ColorRect" type="ColorRect" parent="RigidBody2D" unique_id=1334481913]
+[node name="ColorRect" type="ColorRect" parent="Floor" unique_id=1334481913]
 offset_left = -2080.0
 offset_top = 1223.0
 offset_right = 8769.0
 offset_bottom = 1894.0
-color = Color(0.11, 0.11, 0.11, 1)
+color = Color(0.07082722, 0.07082721, 0.07082722, 1)
+
+[node name="ColorRect2" type="ColorRect" parent="Floor" unique_id=951565099]
+offset_left = -1955.0
+offset_top = -1713.0
+offset_right = 8894.0
+offset_bottom = -1042.0
+color = Color(0.07082722, 0.07082721, 0.07082722, 1)
 
 [node name="Pillar2" type="RigidBody2D" parent="." unique_id=640956935]
 position = Vector2(5628, 415)
@@ -206,3 +219,193 @@ polygon = PackedVector2Array(-387, 246, 4, 245, -64, 159, -73, -1002, -11, -1076
 
 [node name="Enemy" parent="." unique_id=1138559623 instance=ExtResource("5_qrwsy")]
 position = Vector2(3161, 414)
+
+[node name="Ceiling" type="RigidBody2D" parent="." unique_id=762801412]
+position = Vector2(5628, 415)
+
+[node name="Ceiling2" type="Sprite2D" parent="Ceiling" unique_id=772645489]
+texture_filter = 1
+position = Vector2(-7221, -1280)
+scale = Vector2(12.132812, 10.105266)
+texture = ExtResource("6_0kkg6")
+
+[node name="Ceiling3" type="Sprite2D" parent="Ceiling" unique_id=529144610]
+texture_filter = 1
+position = Vector2(-6448, -1280)
+scale = Vector2(12.132812, 10.105266)
+texture = ExtResource("6_0kkg6")
+
+[node name="Ceiling4" type="Sprite2D" parent="Ceiling" unique_id=981637719]
+texture_filter = 1
+position = Vector2(-5674, -1280)
+scale = Vector2(12.132812, 10.105266)
+texture = ExtResource("6_0kkg6")
+
+[node name="Ceiling5" type="Sprite2D" parent="Ceiling" unique_id=858608664]
+texture_filter = 1
+position = Vector2(-4910.0005, -1280.0001)
+scale = Vector2(12.132812, 10.105266)
+texture = ExtResource("6_0kkg6")
+
+[node name="Ceiling6" type="Sprite2D" parent="Ceiling" unique_id=1315604997]
+texture_filter = 1
+position = Vector2(-4157, -1280)
+scale = Vector2(12.132812, 10.105266)
+texture = ExtResource("6_0kkg6")
+
+[node name="Ceiling7" type="Sprite2D" parent="Ceiling" unique_id=812607784]
+texture_filter = 1
+position = Vector2(-3425, -1280)
+scale = Vector2(12.132812, 10.105266)
+texture = ExtResource("6_0kkg6")
+
+[node name="Ceiling8" type="Sprite2D" parent="Ceiling" unique_id=1914361600]
+texture_filter = 1
+position = Vector2(-2700, -1280)
+scale = Vector2(12.132812, 10.105266)
+texture = ExtResource("6_0kkg6")
+
+[node name="Ceiling9" type="Sprite2D" parent="Ceiling" unique_id=237631349]
+texture_filter = 1
+position = Vector2(-1959, -1280)
+scale = Vector2(12.132812, 10.105266)
+texture = ExtResource("6_0kkg6")
+
+[node name="Ceiling10" type="Sprite2D" parent="Ceiling" unique_id=1154698678]
+texture_filter = 1
+position = Vector2(-1198, -1280)
+scale = Vector2(12.132812, 10.105266)
+texture = ExtResource("6_0kkg6")
+
+[node name="Ceiling11" type="Sprite2D" parent="Ceiling" unique_id=1896465935]
+texture_filter = 1
+position = Vector2(-461, -1280)
+scale = Vector2(12.132812, 10.105266)
+texture = ExtResource("6_0kkg6")
+
+[node name="Ceiling12" type="Sprite2D" parent="Ceiling" unique_id=1887684860]
+texture_filter = 1
+position = Vector2(263, -1280)
+scale = Vector2(12.132812, 10.105266)
+texture = ExtResource("6_0kkg6")
+
+[node name="Ceiling13" type="Sprite2D" parent="Ceiling" unique_id=1730223693]
+texture_filter = 1
+position = Vector2(992, -1280)
+scale = Vector2(12.132812, 10.105266)
+texture = ExtResource("6_0kkg6")
+
+[node name="Ceiling14" type="Sprite2D" parent="Ceiling" unique_id=1026041158]
+texture_filter = 1
+position = Vector2(1733, -1280)
+scale = Vector2(12.132812, 10.105266)
+texture = ExtResource("6_0kkg6")
+
+[node name="Ceiling15" type="Sprite2D" parent="Ceiling" unique_id=1179919254]
+texture_filter = 1
+position = Vector2(2466, -1280)
+scale = Vector2(12.132812, 10.105266)
+texture = ExtResource("6_0kkg6")
+
+[node name="Ceiling16" type="Sprite2D" parent="Ceiling" unique_id=744420006]
+texture_filter = 1
+position = Vector2(3101, -1280)
+scale = Vector2(12.132812, 10.105266)
+texture = ExtResource("6_0kkg6")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Ceiling" unique_id=1507779351]
+position = Vector2(-2055, -1285.5)
+shape = SubResource("RectangleShape2D_jkxju")
+
+[node name="Background" type="Node2D" parent="." unique_id=1807196334]
+
+[node name="DoorT" type="Sprite2D" parent="Background" unique_id=1706768805]
+z_index = -1
+texture_filter = 1
+position = Vector2(1813, 284)
+scale = Vector2(9.15, 9.1625)
+texture = ExtResource("7_7ktsu")
+
+[node name="DoorT7" type="Sprite2D" parent="Background" unique_id=616029238]
+z_index = -1
+texture_filter = 1
+position = Vector2(305.00012, 293.00003)
+scale = Vector2(9.15, 9.1625)
+texture = ExtResource("7_7ktsu")
+
+[node name="DoorT8" type="Sprite2D" parent="Background" unique_id=383617417]
+z_index = -1
+texture_filter = 1
+position = Vector2(-611.99994, 293.00003)
+scale = Vector2(9.15, 9.1625)
+texture = ExtResource("7_7ktsu")
+
+[node name="DoorT2" type="Sprite2D" parent="Background" unique_id=1969282038]
+z_index = -1
+texture_filter = 1
+position = Vector2(2792, 287.00003)
+scale = Vector2(9.15, 9.1625)
+texture = ExtResource("7_7ktsu")
+
+[node name="DoorT3" type="Sprite2D" parent="Background" unique_id=1058524717]
+z_index = -1
+texture_filter = 1
+position = Vector2(3751, 293.00003)
+scale = Vector2(9.15, 9.1625)
+texture = ExtResource("7_7ktsu")
+
+[node name="DoorT4" type="Sprite2D" parent="Background" unique_id=40757455]
+z_index = -1
+texture_filter = 1
+position = Vector2(4641, 293.00003)
+scale = Vector2(9.15, 9.1625)
+texture = ExtResource("7_7ktsu")
+
+[node name="DoorT5" type="Sprite2D" parent="Background" unique_id=1726960117]
+z_index = -1
+texture_filter = 1
+position = Vector2(6054, 299.00003)
+scale = Vector2(9.15, 9.1625)
+texture = ExtResource("7_7ktsu")
+
+[node name="DoorT6" type="Sprite2D" parent="Background" unique_id=1725286200]
+z_index = -1
+texture_filter = 1
+position = Vector2(6877, 293)
+scale = Vector2(9.15, 9.1625)
+texture = ExtResource("7_7ktsu")
+
+[node name="Torch" type="Sprite2D" parent="Background" unique_id=154410811]
+z_index = -1
+texture_filter = 1
+position = Vector2(1350.375, 257.625)
+scale = Vector2(6.3409133, 4.952703)
+texture = ExtResource("8_7ktsu")
+
+[node name="Torch2" type="Sprite2D" parent="Background" unique_id=616595305]
+z_index = -1
+texture_filter = 1
+position = Vector2(2334, 274)
+scale = Vector2(6.3409133, 4.952703)
+texture = ExtResource("8_7ktsu")
+
+[node name="Torch3" type="Sprite2D" parent="Background" unique_id=80026964]
+z_index = -1
+texture_filter = 1
+position = Vector2(3330, 287)
+scale = Vector2(6.3409133, 4.952703)
+texture = ExtResource("8_7ktsu")
+
+[node name="Torch4" type="Sprite2D" parent="Background" unique_id=1088016349]
+z_index = -1
+texture_filter = 1
+position = Vector2(4201, 302)
+scale = Vector2(6.3409133, 4.952703)
+texture = ExtResource("8_7ktsu")
+
+[node name="Torch5" type="Sprite2D" parent="Background" unique_id=41217066]
+z_index = -1
+texture_filter = 1
+position = Vector2(5114.0005, 317)
+scale = Vector2(6.3409133, 4.952703)
+texture = ExtResource("8_7ktsu")
