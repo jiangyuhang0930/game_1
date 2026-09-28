@@ -45,8 +45,13 @@ func _physics_process(_delta: float) -> void:
 	if dash_cooldown.is_stopped() and !dashing:
 		dashing = true
 		speed = 1500
-		var dash_direction = global_position.direction_to(player.global_position + Vector2(50, 0))
-		dash_position = player.global_position + Vector2(50, 0)
+		
+		if global_position.x < player.global_position.x:
+			dash_position = player.global_position + Vector2(350, 0)
+		else:
+			dash_position = player.global_position - Vector2(300, 0)
+		var dash_direction = global_position.direction_to(dash_position)
+		
 		# Set velocity and move
 		velocity.x = (dash_direction * speed).x
 		move_and_slide()
@@ -54,9 +59,9 @@ func _physics_process(_delta: float) -> void:
 		
 	if dashing:
 		print(global_position)
-		print(dash_position)
-		print(global_position.distance_to(dash_position))
-		if global_position.distance_to(dash_position) < 50:
+		#print(dash_position)
+		if global_position.distance_to(dash_position) < 50 \
+			or global_position.x < 1109 or global_position.x > 5177:
 			dashing = false
 			speed = 300
 			dash_cooldown.start()

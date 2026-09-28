@@ -215,7 +215,7 @@ scale = Vector2(6.966, -9.722)
 texture = ExtResource("4_ow18i")
 
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Pillar2" unique_id=1191322932]
-polygon = PackedVector2Array(-387, 246, 4, 245, -64, 159, -73, -1002, -11, -1076, -365, -1076, -295, -1000, -294, 159)
+polygon = PackedVector2Array(-387, 246, 4, 245, -64, 159, -73, -1002, -11, -1076, -365, -1076, -295, -1000, -315, 143)
 
 [node name="Enemy" parent="." unique_id=1138559623 instance=ExtResource("5_qrwsy")]
 position = Vector2(3161, 414)
