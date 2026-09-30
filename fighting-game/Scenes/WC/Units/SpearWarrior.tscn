@@ -256,7 +256,7 @@ animations = [{
 }],
 "loop": false,
 "name": &"attack",
-"speed": 5.0
+"speed": 8.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -309,7 +309,7 @@ animations = [{
 }],
 "loop": false,
 "name": &"death",
-"speed": 5.0
+"speed": 8.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -338,7 +338,7 @@ animations = [{
 }],
 "loop": true,
 "name": &"idle",
-"speed": 5.0
+"speed": 8.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -367,7 +367,7 @@ animations = [{
 }],
 "loop": true,
 "name": &"run",
-"speed": 5.0
+"speed": 8.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -387,7 +387,7 @@ animations = [{
 }],
 "loop": false,
 "name": &"take_hit",
-"speed": 5.0
+"speed": 8.0
 }]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_la54m"]
@@ -405,7 +405,7 @@ portrait = ExtResource("3_vavu0")
 position = Vector2(0, -9)
 scale = Vector2(0.37, 0.37)
 sprite_frames = SubResource("SpriteFrames_4x4kl")
-animation = &"idle"
+animation = &"attack"
 
 [node name="CollisionShape2D" parent="ClickArea" parent_id_path=PackedInt32Array(1699749257) index="0" unique_id=1171996678]
 position = Vector2(0, -0.25)

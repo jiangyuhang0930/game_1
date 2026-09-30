@@ -26,6 +26,10 @@ var current_map_position: Vector2i = Vector2i(-999999, -999999)
 @onready var wait_button: Button = $UI/ActionPanel/VBoxContainer/WaitButton
 @onready var cancel_button: Button = $UI/ActionPanel/VBoxContainer/CancelButton
 
+# Battle result UI.
+@onready var battle_result_panel: Control = $UI/BattleResultPanel
+@onready var result_label: Label = $UI/BattleResultPanel/ResultLabel
+
 # Hero scene used to create new units.
 @export var hero_scene: PackedScene
 # Goblin scene.
@@ -71,6 +75,9 @@ var is_attack_selection_active: bool = false
 
 # Whether an attack animation is currently being executed.
 var is_unit_attacking: bool = false
+
+# Whether the battle has ended.
+var battle_finished: bool = false
 
 # Whether a unit is currently moving.
 var is_unit_moving: bool = false
@@ -219,8 +226,55 @@ func remove_dead_unit(unit: Unit) -> void:
 	unit.queue_free()
 
 
+# Check whether the battle has ended.
+func check_battle_result() -> void:
+
+	# Do not check the result more than once.
+	if battle_finished:
+		return
+
+	# The player loses when all Heroes are defeated.
+	if heroes.is_empty():
+		battle_finished = true
+		show_battle_result("DEFEAT")
+		return
+
+	# The player wins when all Enemies are defeated.
+	if enemies.is_empty():
+		battle_finished = true
+		show_battle_result("VICTORY")
+
+
+# Display the final battle result.
+# Display the final battle result.
+func show_battle_result(result_text: String) -> void:
+
+	# Set the result text.
+	result_label.text = result_text
+
+	# Hide battle controls after the battle ends.
+	end_turn_button.hide()
+	action_panel.hide()
+	selection.hide()
+
+	# Clear remaining battle indicators.
+	clear_undo_position()
+	
+	for child in movement_overlay.get_children():
+		child.queue_free()
+	
+	for child in attack_overlay.get_children():
+		child.queue_free()
+
+	# Show the result panel.
+	battle_result_panel.show()
+
+
 func _ready() -> void:
+
 	Input.mouse_mode = Input.MOUSE_MODE_HIDDEN
+	# Hide the battle result panel until the battle ends.
+	battle_result_panel.hide()
 	
 	# Set the end turn button
 	end_turn_button.pressed.connect(_on_end_turn_button_pressed)
@@ -261,7 +315,7 @@ func _ready() -> void:
 	
 	create_hellfire_rhino(Vector2i(-9, 3))
 	
-	create_goblin(Vector2i(7, -4))
+	# create_goblin(Vector2i(7, -4))
 	create_goblin(Vector2i(-5, 1))
 	create_goblin(Vector2i(-5, 0))
 	
@@ -489,6 +543,10 @@ func _process(_delta: float) -> void:
 
 
 func _on_unit_clicked(unit: Unit) -> void:
+	
+	# Ignore unit clicks after the battle has ended.
+	if battle_finished:
+		return
 	
 	# Ignore unit clicks while an attack is being executed.
 	if is_unit_attacking:
@@ -828,6 +886,9 @@ func select_attack_target(target_cell: Vector2i) -> void:
 	# Execute the attack and wait until the animation finishes.
 	await attack_system.execute_attack(hero, targets)
 
+	# Check whether the battle ended after the attack completed.
+	check_battle_result()
+
 	# Unlock unit input after the attack is completed.
 	is_unit_attacking = false
 	
@@ -939,6 +1000,11 @@ func undo_selected_unit_movement() -> bool:
 # Handle right-click before UI controls consume the event.
 func _input(event: InputEvent) -> void:
 	
+	# Ignore all input after the battle has ended.
+	if battle_finished:
+		get_viewport().set_input_as_handled()
+		return
+	
 	# Ignore input while an attack is being executed.
 	if is_unit_attacking:
 		get_viewport().set_input_as_handled()
@@ -976,6 +1042,11 @@ func _input(event: InputEvent) -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
+	
+	# Ignore all input after the battle has ended.
+	if battle_finished:
+		get_viewport().set_input_as_handled()
+		return
 	
 	# Ignore input while an attack is being executed.
 	if is_unit_attacking:

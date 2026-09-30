@@ -12,7 +12,7 @@ var occupied_map_position: Vector2i
 @export var move_range: int = 3
 
 ## Maximum health of this unit.
-@export var max_hp: int = 10
+@export var max_hp: int = 8
 
 ## Current health of this unit.
 var current_hp: int
