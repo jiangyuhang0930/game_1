@@ -1,5 +1,6 @@
 extends CharacterBody2D
 
+var spikeball = load("res://Scenes/FG/spikeball.tscn")
 var health = 20
 var sprite
 var dashing = false
@@ -7,11 +8,23 @@ var dash_position : Vector2 = Vector2(-999, -999)
 @export var area_1 : Area2D
 @export var speed = 300
 @onready var dash_cooldown = $DashTimer
-
+var instance
 func _ready() -> void:
 	sprite = $Sprite2D
+	
+	
+
+
 
 func _process(_delta):
+	if instance == null:
+		instance = spikeball.instantiate()
+		get_tree().current_scene.add_child(instance)
+		instance.global_position = global_position
+		instance.linear_velocity = Vector2(1, -1000)
+
+
+
 	if health == 0:
 		queue_free()
 	var touching_objects = area_1.get_overlapping_bodies()
@@ -58,8 +71,7 @@ func _physics_process(_delta: float) -> void:
 		return
 		
 	if dashing:
-		print(global_position)
-		#print(dash_position)
+
 		if global_position.distance_to(dash_position) < 50 \
 			or global_position.x < 1109 or global_position.x > 5177:
 			dashing = false

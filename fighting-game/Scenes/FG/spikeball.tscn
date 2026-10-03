@@ -1,0 +1,19 @@
+[gd_scene format=3 uid="uid://lts0bqc8vctd"]
+
+[ext_resource type="Texture2D" uid="uid://chk56ohmmwejm" path="res://Art/FG/enviornment/Spike ball.png" id="1_3c3au"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_3c3au"]
+radius = 61.7171
+
+[node name="Spikeball" type="RigidBody2D" unique_id=489052504]
+collision_layer = 2
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1899662625]
+position = Vector2(1, -8)
+shape = SubResource("CircleShape2D_3c3au")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=684064211]
+texture_filter = 1
+scale = Vector2(5.6093755, 5.3437495)
+texture = ExtResource("1_3c3au")

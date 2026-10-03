@@ -25,8 +25,8 @@ collision_mask = 1
 [node name="Pillar" type="RigidBody2D" parent="." unique_id=1293693734]
 position = Vector2(1145, 409)
 disable_mode = 1
-collision_layer = 3
-collision_mask = 3
+collision_layer = 7
+collision_mask = 7
 mass = 1000.0
 freeze = true
 
@@ -82,8 +82,8 @@ texture = ExtResource("4_ow18i")
 polygon = PackedVector2Array(-387, 246, 4, 245, -64, 159, -73, -1002, -11, -1076, -365, -1076, -295, -1000, -294, 159)
 
 [node name="Floor" type="RigidBody2D" parent="." unique_id=1034121807]
-collision_layer = 3
-collision_mask = 3
+collision_layer = 7
+collision_mask = 7
 freeze = true
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Floor" unique_id=1672906469]
@@ -161,8 +161,8 @@ color = Color(0.07082722, 0.07082721, 0.07082722, 1)
 [node name="Pillar2" type="RigidBody2D" parent="." unique_id=640956935]
 position = Vector2(5628, 415)
 disable_mode = 1
-collision_layer = 3
-collision_mask = 3
+collision_layer = 7
+collision_mask = 7
 mass = 1000.0
 freeze = true
 
@@ -222,6 +222,8 @@ position = Vector2(3161, 414)
 
 [node name="Ceiling" type="RigidBody2D" parent="." unique_id=762801412]
 position = Vector2(5628, 415)
+collision_layer = 7
+collision_mask = 7
 
 [node name="Ceiling2" type="Sprite2D" parent="Ceiling" unique_id=772645489]
 texture_filter = 1

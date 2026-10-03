@@ -216,8 +216,8 @@ _data = {
 load_path = "res://.godot/imported/Heart_Container.png-c9bc4cfbf24ef3bb8c6e7f5063a9db9a.ctex"
 
 [node name="Knight" type="CharacterBody2D" unique_id=828705993 node_paths=PackedStringArray("camera", "sword_slash_right", "sword_slash_left", "sword_slash_up", "sword_slash_down") groups=["player"]]
-collision_layer = 2
-collision_mask = 2
+collision_layer = 4
+collision_mask = 4
 script = ExtResource("1_tai8l")
 speed = 30.0
 jump_power = 70.0
@@ -230,7 +230,7 @@ sword_slash_down = NodePath("SwordSlashDown")
 [node name="Camera2D" type="Camera2D" parent="." unique_id=986295408]
 position = Vector2(268, 171)
 offset = Vector2(0, -300)
-zoom = Vector2(0.53, 0.53)
+zoom = Vector2(0.5, 0.5)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1347495003]
 position = Vector2(251.5, 174.5)
