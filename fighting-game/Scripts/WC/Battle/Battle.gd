@@ -407,8 +407,15 @@ func start_enemy_turn() -> void:
 		await enemy.take_turn(
 			heroes,
 			pathfinding,
-			deployment_manager
+			deployment_manager,
+			attack_system
 		)
+
+		# Check whether the battle ended during the enemy's attack.
+		check_battle_result()
+
+		if battle_finished:
+			return
 
 	end_enemy_turn()
 

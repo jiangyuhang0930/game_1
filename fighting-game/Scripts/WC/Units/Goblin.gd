@@ -2,10 +2,18 @@ extends "res://Scripts/WC/Units/Enemy.gd"
 class_name Goblin
 
 
+func _ready() -> void:
+	super._ready()
+	attack_type = AttackType.BASIC
+	attack_min_range = 1
+	attack_max_range = 1
+
+
 func take_turn(
 	heroes: Array[Hero],
 	pathfinding: Pathfinding,
-	deployment_manager: DeploymentManager
+	deployment_manager: DeploymentManager,
+	attack_system: AttackSystem
 ) -> void:
 
 	# Do nothing if there are no heroes.
@@ -13,8 +21,9 @@ func take_turn(
 		return
 
 	# Find the closest hero that can be reached.
+	var _closest_hero: Hero = null
 	var closest_path: Array[Vector2i] = []
-	var shortest_distance := INF
+	var shortest_distance := 999999
 
 	for hero in heroes:
 
@@ -29,17 +38,22 @@ func take_turn(
 
 		if path.size() < shortest_distance:
 			shortest_distance = path.size()
+			_closest_hero = hero
 			closest_path = path
 
 	# Do nothing if no hero can be reached.
-	if closest_path.is_empty():
+	if _closest_hero == null or closest_path.is_empty():
 		return
 
 	# Stop next to the hero instead of moving onto the hero's cell.
 	var max_path_index := closest_path.size() - 2
 
-	# Do not move if already next to the hero.
+	# Attack immediately if the Goblin is already within attack range.
 	if max_path_index < 1:
+		await attack_system.execute_enemy_attack(
+			self,
+			_closest_hero
+		)
 		return
 
 	# Limit movement by the Goblin's movement range.
@@ -69,3 +83,24 @@ func take_turn(
 
 	# Mark the Goblin as having moved this turn.
 	finish_move()
+	
+	# Attack the closest Hero if the Goblin is now within attack range.
+	var distance_to_target : int = (
+		abs(
+			occupied_map_position.x
+			- _closest_hero.occupied_map_position.x
+		)
+		+ abs(
+			occupied_map_position.y
+			- _closest_hero.occupied_map_position.y
+		)
+	)
+
+	if (
+		distance_to_target >= attack_min_range
+		and distance_to_target <= attack_max_range
+	):
+		await attack_system.execute_enemy_attack(
+			self,
+			_closest_hero
+		)

@@ -176,3 +176,63 @@ func execute_attack(hero: Hero, targets: Array[Enemy]) -> void:
 
 	# Return the attacker to idle.
 	hero.play_animation("idle")
+
+
+# Execute a basic attack from an Enemy against a Hero.
+func execute_enemy_attack(
+	enemy: Enemy,
+	target: Hero
+) -> void:
+
+	# Do not attack a dead target.
+	if target.is_dead:
+		return
+
+	# Do not attack if the target is outside attack range.
+	var distance : int = (
+		abs(
+			enemy.occupied_map_position.x
+			- target.occupied_map_position.x
+		)
+		+ abs(
+			enemy.occupied_map_position.y
+			- target.occupied_map_position.y
+		)
+	)
+
+	if distance < enemy.attack_min_range:
+		return
+
+	if distance > enemy.attack_max_range:
+		return
+
+	# Mark the Enemy as having attacked.
+	enemy.has_attacked = true
+
+	# Face the target before the attack animation.
+	enemy.face_toward_map_position(
+		target.occupied_map_position
+	)
+
+	# Play the Enemy attack animation.
+	await enemy.play_animation_and_wait("attack")
+
+	# Play the target hit reaction.
+	target.play_hit_reaction()
+
+	# Wait until the hit reaction finishes.
+	if target.sprite.animation == "take_hit":
+		await target.sprite.animation_finished
+
+	# Apply damage to the target.
+	var target_died: bool = target.take_damage(4)
+
+	# Play the death animation if the target was defeated.
+	if target_died:
+		await target.play_death_animation()
+
+		# Remove the defeated Hero from the battle.
+		battle.remove_dead_unit(target)
+
+	# Return the Enemy to idle.
+	enemy.play_animation("idle")
