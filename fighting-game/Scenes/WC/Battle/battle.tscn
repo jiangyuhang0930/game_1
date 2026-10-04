@@ -81,7 +81,7 @@ script = ExtResource("7_xwls7")
 script = ExtResource("12_3psjl")
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=1375894524]
-zoom = Vector2(4, 4)
+zoom = Vector2(3, 3)
 
 [node name="UI" type="CanvasLayer" parent="." unique_id=98677289]
 

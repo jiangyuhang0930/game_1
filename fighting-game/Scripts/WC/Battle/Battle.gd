@@ -358,12 +358,6 @@ func start_hero_turn() -> void:
 	current_phase = BattlePhase.HERO_TURN
 	end_turn_button.visible = true
 
-	# Reset all heroes so they can act again this turn.
-	for hero in heroes:
-		hero.reset_action()
-		hero.can_undo_move = false
-		hero.update_grass_transparency()
-
 	# Clear any previous selection and undo marker.
 	clear_unit_selection()
 	clear_undo_position()
@@ -393,6 +387,16 @@ func end_hero_turn() -> void:
 
 # Start the Enemy Turn.
 func start_enemy_turn() -> void:
+	
+	# Reset all heroes so they can act again next turn.
+	for hero in heroes:
+		hero.reset_action()
+		hero.can_undo_move = false
+		hero.update_grass_transparency()
+	
+	# Clear any previous selection and undo marker.
+	# clear_unit_selection()
+	# clear_undo_position()
 
 	current_phase = BattlePhase.ENEMY_TURN
 	end_turn_button.visible = false
