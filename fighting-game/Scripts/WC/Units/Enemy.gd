@@ -17,6 +17,9 @@ enum AttackType {
 # Maximum attack range of this enemy.
 @export var attack_max_range: int = 1
 
+# Damage dealt by this enemy's basic attack.
+@export var attack_damage: int = 4
+
 
 # Execute this enemy's action during the Enemy Turn.
 func take_turn(

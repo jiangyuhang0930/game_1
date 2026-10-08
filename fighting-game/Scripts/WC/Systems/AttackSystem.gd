@@ -134,48 +134,61 @@ func get_attack_targets(
 	return targets
 
 
-func execute_attack(hero: Hero, targets: Array[Enemy]) -> void:
+func execute_attack(
+	hero: Hero,
+	targets: Array[Enemy]
+) -> void:
+
 	if hero.has_attacked:
 		return
 
 	hero.has_attacked = true
 
-	# Play the attack animation.
-	await hero.play_animation_and_wait("attack")
+	# Start the attack animation.
+	hero.play_animation("attack")
 
-	# Start the hit reaction for all targets at the same time.
+	# Wait until the middle of the attack animation.
+	var attack_duration := hero.get_animation_duration("attack")
+	await get_tree().create_timer(
+		attack_duration * 0.5
+	).timeout
+
+	# Trigger the hit at the attack midpoint.
 	for target in targets:
-		target.play_hit_reaction()
+		target.play_hit_reaction(hero.attack_damage)
 
-	# Wait until all hit reactions have finished.
-	for target in targets:
-		if target.sprite.animation == "take_hit":
-			await target.sprite.animation_finished
-
-	# Apply damage to all targets.
+	# Apply damage at the hit point.
 	var dead_targets: Array[Enemy] = []
 
 	for target in targets:
-		var target_died: bool = target.take_damage(4)
+		var target_died: bool = target.take_damage(hero.attack_damage)
 
 		if target_died:
 			dead_targets.append(target)
 
-	# Start all death animations at the same time.
-	for target in dead_targets:
-		target.play_death_animation()
+	# Wait for the attacker's animation to finish.
+	if hero.sprite.is_playing():
+		await hero.sprite.animation_finished
 
-	# Wait until all death animations have finished.
-	for target in dead_targets:
-		if target.sprite.animation == "death":
+	# Return the attacker to idle immediately after the attack.
+	hero.play_animation("idle")
+
+	# Wait for targets that are still playing their hit reaction.
+	for target in targets:
+		if (
+			not target.is_dead
+			and target.sprite.animation == "take_hit"
+			and target.sprite.is_playing()
+		):
 			await target.sprite.animation_finished
-	
-	# Remove defeated units after their death animations finish.
+
+	# Play death animations after the hit reaction finishes.
+	for target in dead_targets:
+		await target.play_death_animation()
+
+	# Remove dead targets after their death animations finish.
 	for target in dead_targets:
 		battle.remove_dead_unit(target)
-
-	# Return the attacker to idle.
-	hero.play_animation("idle")
 
 
 # Execute a basic attack from an Enemy against a Hero.
@@ -189,7 +202,7 @@ func execute_enemy_attack(
 		return
 
 	# Do not attack if the target is outside attack range.
-	var distance : int = (
+	var distance: int = (
 		abs(
 			enemy.occupied_map_position.x
 			- target.occupied_map_position.x
@@ -214,18 +227,35 @@ func execute_enemy_attack(
 		target.occupied_map_position
 	)
 
-	# Play the Enemy attack animation.
-	await enemy.play_animation_and_wait("attack")
+	# Start the attack animation.
+	enemy.play_animation("attack")
 
-	# Play the target hit reaction.
-	target.play_hit_reaction()
+	# Wait until the middle of the attack animation.
+	var attack_duration := enemy.get_animation_duration("attack")
+	await get_tree().create_timer(
+		attack_duration * 0.5
+	).timeout
 
-	# Wait until the hit reaction finishes.
-	if target.sprite.animation == "take_hit":
+	# Trigger the hit at the attack midpoint.
+	target.play_hit_reaction(enemy.attack_damage)
+
+	# Apply damage at the hit point.
+	var target_died: bool = target.take_damage(enemy.attack_damage)
+
+	# Wait for the attacker's animation to finish.
+	if enemy.sprite.is_playing():
+		await enemy.sprite.animation_finished
+
+	# Return the attacker to idle immediately after the attack.
+	enemy.play_animation("idle")
+
+	# Wait for the target's hit reaction to finish.
+	if (
+		not target.is_dead
+		and target.sprite.animation == "take_hit"
+		and target.sprite.is_playing()
+	):
 		await target.sprite.animation_finished
-
-	# Apply damage to the target.
-	var target_died: bool = target.take_damage(4)
 
 	# Play the death animation if the target was defeated.
 	if target_died:
@@ -233,6 +263,3 @@ func execute_enemy_attack(
 
 		# Remove the defeated Hero from the battle.
 		battle.remove_dead_unit(target)
-
-	# Return the Enemy to idle.
-	enemy.play_animation("idle")

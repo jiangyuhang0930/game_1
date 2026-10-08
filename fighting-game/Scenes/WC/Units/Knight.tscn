@@ -14,6 +14,7 @@ script = ExtResource("2_s3b7s")
 attack_type = 0
 attack_min_range = 1
 attack_max_range = 1
+attack_damage = 4
 unit_name = "Knight"
 portrait = ExtResource("3_pvrm8")
 
@@ -21,7 +22,9 @@ portrait = ExtResource("3_pvrm8")
 position = Vector2(1.533, -25)
 scale = Vector2(0.9833333, 1)
 sprite_frames = ExtResource("3_gbnob")
-animation = &"idle"
+animation = &"take_hit"
+frame = 3
+frame_progress = 1.0
 offset = Vector2(2, 0)
 
 [node name="CollisionShape2D" parent="ClickArea" parent_id_path=PackedInt32Array(1699749257) index="0" unique_id=1171996678]

@@ -146,6 +146,18 @@ region = Rect2(1080, 0, 120, 80)
 atlas = ExtResource("5_sbjlu")
 region = Rect2(0, 0, 120, 80)
 
+[sub_resource type="AtlasTexture" id="AtlasTexture_cy8xj"]
+atlas = ExtResource("2_f2k1l")
+region = Rect2(120, 0, 120, 80)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_khucr"]
+atlas = ExtResource("2_f2k1l")
+region = Rect2(120, 0, 120, 80)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_cd0pm"]
+atlas = ExtResource("2_f2k1l")
+region = Rect2(0, 0, 120, 80)
+
 [resource]
 animations = [{
 "frames": [{
@@ -273,6 +285,15 @@ animations = [{
 "frames": [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_afefy")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_cy8xj")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_khucr")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_cd0pm")
 }],
 "loop": false,
 "name": &"take_hit",

@@ -94,6 +94,19 @@ func play_animation_and_wait(animation_name: String) -> void:
 	sprite.play(animation_name)
 	await sprite.animation_finished
 
+# Get the duration of an animation in seconds.
+func get_animation_duration(animation_name: String) -> float:
+	if not sprite.sprite_frames.has_animation(animation_name):
+		return 0.0
+
+	var frame_count := sprite.sprite_frames.get_frame_count(animation_name)
+	var animation_speed := sprite.sprite_frames.get_animation_speed(animation_name)
+
+	if animation_speed <= 0.0:
+		return 0.0
+
+	return float(frame_count) / animation_speed
+
 # Play the death animation and wait until it finishes.
 func play_death_animation() -> void:
 	if is_dead:
@@ -104,10 +117,13 @@ func play_death_animation() -> void:
 	# Play the death animation.
 	await play_animation_and_wait("death")
 
-# Play the hit reaction, flash white, and return to idle.
-func play_hit_reaction() -> void:
+# Play the hit reaction, flash white, and show the damage number.
+func play_hit_reaction(amount: int) -> void:
 	# Start the white flash without blocking the hit animation.
 	flash_white()
+
+	# Show the damage number.
+	show_damage_number(amount)
 
 	# Play the hit reaction animation.
 	await play_animation_and_wait("take_hit")
@@ -115,18 +131,92 @@ func play_hit_reaction() -> void:
 	# Return to idle after the hit reaction finishes.
 	play_animation("idle")
 
+# Show a floating damage number above the unit.
+func show_damage_number(amount: int) -> void:
+	var damage_label := Label.new()
+
+	damage_label.text = "-" + str(amount)
+
+	# Get the ClickArea collision shape.
+	var collision_shape := click_area.get_node("CollisionShape2D") as CollisionShape2D
+	var rectangle_shape := collision_shape.shape as RectangleShape2D
+
+	# Convert the ClickArea position into Effects local coordinates.
+	var click_area_position := effects.to_local(
+		click_area.global_position
+	)
+
+	# Place the damage number above the top of the ClickArea.
+	damage_label.position = click_area_position + Vector2(
+		-6,
+		-rectangle_shape.size.y * 0.5 - 15
+	)
+	
+	# Keep the damage number at a consistent visual size regardless of Unit scale.
+	damage_label.scale = Vector2(
+		1.0 / abs(scale.x),
+		1.0 / abs(scale.y)
+	)
+
+	# Use a red color for damage numbers.
+	damage_label.modulate = Color(1.0, 0.4, 0.4, 1.0)
+
+	# Make the damage number easier to read.
+	damage_label.add_theme_font_size_override("font_size", 8)
+	damage_label.add_theme_color_override(
+		"font_outline_color",
+		Color.BLACK
+	)
+	damage_label.add_theme_constant_override(
+		"outline_size",
+		1
+	)
+
+	effects.add_child(damage_label)
+
+	# Move the damage number upward and fade it out.
+	var tween := create_tween()
+	tween.set_parallel(true)
+
+	tween.tween_property(
+		damage_label,
+		"position",
+		damage_label.position + Vector2(0, -24),
+		0.5
+	)
+
+	tween.tween_property(
+		damage_label,
+		"modulate:a",
+		0.0,
+		0.5
+	)
+
+	await tween.finished
+
+	damage_label.queue_free()
+
 # Flash the unit white briefly when receiving damage.
 func flash_white() -> void:
-	var original_modulate := visual_root.modulate
+	var cell := grid_data.get_cell_from_map(map_position)
+	var alpha := 1.0
 
-	# Flash white.
-	visual_root.modulate = Color.WHITE
+	if cell.terrain is GrassData:
+		alpha = 0.5
 
-	# Wait briefly.
-	await get_tree().create_timer(0.08).timeout
+	# Brighten the unit for the hit flash.
+	visual_root.modulate = Color(
+		2.0,
+		2.0,
+		2.0,
+		alpha
+	)
 
-	# Restore the original appearance.
-	visual_root.modulate = original_modulate
+	# Keep the flash visible briefly.
+	await get_tree().create_timer(0.12).timeout
+
+	# Restore the normal unit appearance.
+	update_grass_transparency()
 
 # Face the target direction before attacking.
 func face_toward_map_position(target_map_position: Vector2i) -> void:
