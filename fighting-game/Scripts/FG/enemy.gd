@@ -1,6 +1,7 @@
 extends CharacterBody2D
 
 var spikeball = load("res://Scenes/FG/spikeball.tscn")
+var player
 var health = 20
 var sprite
 var dashing = false
@@ -8,22 +9,21 @@ var dash_position : Vector2 = Vector2(-999, -999)
 @export var area_1 : Area2D
 @export var speed = 300
 @onready var dash_cooldown = $DashTimer
+@onready var spikeball_cooldown = $SpikeballTimer
 var instance
 func _ready() -> void:
 	sprite = $Sprite2D
-	
+	player = get_tree().get_first_node_in_group("player")
 	
 
 
 
 func _process(_delta):
-	if instance == null:
-		instance = spikeball.instantiate()
-		get_tree().current_scene.add_child(instance)
-		instance.global_position = global_position
-		instance.linear_velocity = Vector2(1, -1000)
-
-
+	if spikeball_cooldown.is_stopped():
+		if instance != null:
+			instance.queue_free()
+		shoot_spikeball()
+		spikeball_cooldown.start()
 
 	if health == 0:
 		queue_free()
@@ -33,7 +33,7 @@ func _process(_delta):
 			dashing = false
 			speed = 300
 			dash_cooldown.start()
-			var player = get_tree().get_first_node_in_group("player")
+
 			if position.x - 50 > player.position.x:
 				player.knockback_direction = 'left'
 			else:
@@ -49,12 +49,10 @@ func _process(_delta):
 func _on_area_2d_area_entered(area: Area2D) -> void:
 
 	if area.is_in_group("slash"):
-		var player = get_tree().get_first_node_in_group("player")
 		player.apply_knockback(player.melee_recoil_force)
 		health -= 1
 	
 func _physics_process(_delta: float) -> void:
-	var player = get_tree().get_first_node_in_group("player")
 	if dash_cooldown.is_stopped() and !dashing:
 		dashing = true
 		speed = 1500
@@ -73,7 +71,7 @@ func _physics_process(_delta: float) -> void:
 	if dashing:
 
 		if global_position.distance_to(dash_position) < 50 \
-			or global_position.x < 1109 or global_position.x > 5177:
+			or global_position.x < 1110 or global_position.x > 5176:
 			dashing = false
 			speed = 300
 			dash_cooldown.start()
@@ -94,6 +92,18 @@ func _physics_process(_delta: float) -> void:
 	
 	
 
+func shoot_spikeball():
+
+	instance = spikeball.instantiate()
+	get_tree().current_scene.add_child(instance)
+	var random_int = randi_range(800, 2500)
+	var r_sign : int
+	if sprite.flip_h:
+		r_sign = -1
+	else:
+		r_sign = 1
+	instance.global_position = global_position
+	instance.linear_velocity = Vector2((0 + random_int) * r_sign, -3000)
 
 
 #func _on_area_2d_body_entered(body: Node2D) -> void:

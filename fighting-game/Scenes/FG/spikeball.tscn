@@ -1,19 +1,41 @@
 [gd_scene format=3 uid="uid://lts0bqc8vctd"]
 
 [ext_resource type="Texture2D" uid="uid://chk56ohmmwejm" path="res://Art/FG/enviornment/Spike ball.png" id="1_3c3au"]
+[ext_resource type="Script" uid="uid://c1lt66uhrlc1a" path="res://Scripts/FG/spikeball.gd" id="1_eceth"]
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_eceth"]
+friction = 0.1
+bounce = 0.92
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_3c3au"]
-radius = 61.7171
+radius = 57.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_eceth"]
+radius = 64.00781
 
 [node name="Spikeball" type="RigidBody2D" unique_id=489052504]
 collision_layer = 2
 collision_mask = 2
+physics_material_override = SubResource("PhysicsMaterial_eceth")
+script = ExtResource("1_eceth")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1899662625]
-position = Vector2(1, -8)
+position = Vector2(-4, -9)
 shape = SubResource("CircleShape2D_3c3au")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=684064211]
 texture_filter = 1
 scale = Vector2(5.6093755, 5.3437495)
 texture = ExtResource("1_3c3au")
+
+[node name="Area2D" type="Area2D" parent="." unique_id=272410639]
+position = Vector2(-3, -5)
+collision_layer = 7
+collision_mask = 7
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D" unique_id=1218792264]
+position = Vector2(-2, -4)
+shape = SubResource("CircleShape2D_eceth")
+
+[connection signal="area_entered" from="Area2D" to="." method="_on_area_2d_area_entered"]
+[connection signal="body_entered" from="Area2D" to="." method="_on_area_2d_body_entered"]
