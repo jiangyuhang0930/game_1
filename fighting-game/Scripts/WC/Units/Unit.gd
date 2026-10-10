@@ -2,6 +2,10 @@ extends Node2D
 class_name Unit
 signal clicked(unit: Unit)
 
+
+# Emitted whenever the unit's HP changes.
+signal hp_changed(current_hp: int, max_hp: int)
+
 ## Tile position on the map.
 var map_position: Vector2i
 
@@ -52,6 +56,27 @@ var grid_data: GridData
 
 @onready var click_area: Area2D = $ClickArea
 
+# HP bar displayed above the unit.
+var overhead_hp_bar: ProgressBar
+
+# Timer used to hide the overhead HP bar after combat.
+var overhead_hp_bar_timer: Timer
+
+# Tween used to animate the overhead HP bar.
+var overhead_hp_tween: Tween
+
+# Vertical spacing between the ClickArea and the HP bar.
+@export var overhead_hp_bar_spacing: float = 8.0
+
+# Width of the overhead HP bar.
+@export var overhead_hp_bar_width: float = 16.0
+
+# Height of the overhead HP bar.
+@export var overhead_hp_bar_height: float = 3.0
+
+# Horizontal adjustment for the overhead HP bar.
+@export var overhead_hp_bar_offset_x: float = 0.0
+
 # Whether the unit is currently being dragged.
 var is_dragging: bool = false
 
@@ -69,6 +94,124 @@ func _ready() -> void:
 	play_animation("idle")
 	click_area.input_event.connect(_on_click_area_input_event)
 	
+	create_overhead_hp_bar()
+
+# Create an HP bar above the unit using its ClickArea bounds.
+func create_overhead_hp_bar() -> void:
+	overhead_hp_bar = ProgressBar.new()
+
+	# Configure the HP bar.
+	overhead_hp_bar.show_percentage = false
+	overhead_hp_bar.min_value = 0
+	overhead_hp_bar.max_value = max_hp
+	overhead_hp_bar.value = current_hp
+	
+	# Use a dark gray background for the HP bar.
+	var background_style := StyleBoxFlat.new()
+	background_style.bg_color = Color(0.16, 0.16, 0.16, 1.0)
+	background_style.set_corner_radius_all(1)
+	background_style.set_content_margin_all(0.0)
+
+	var fill_style := StyleBoxFlat.new()
+	fill_style.bg_color = Color(0.85, 0.12, 0.12, 1.0)
+	fill_style.set_corner_radius_all(1)
+	fill_style.set_content_margin_all(0.0)
+
+	overhead_hp_bar.add_theme_stylebox_override(
+		"background",
+		background_style
+	)
+	overhead_hp_bar.add_theme_stylebox_override(
+		"fill",
+		fill_style
+	)
+
+	# Counteract the Unit scale.
+	overhead_hp_bar.scale = Vector2(
+		1.0 / max(abs(scale.x), 0.001),
+		1.0 / max(abs(scale.y), 0.001)
+	)
+
+	# Hide the HP bar until the unit takes damage.
+	overhead_hp_bar.hide()
+
+	# Add the HP bar to the unit UI.
+	ui.add_child(overhead_hp_bar)
+	
+	# Apply the final dimensions after adding the Control to the scene tree.
+	overhead_hp_bar.custom_minimum_size = Vector2(
+		overhead_hp_bar_width,
+		overhead_hp_bar_height
+	)
+	overhead_hp_bar.size = Vector2(
+		overhead_hp_bar_width,
+		overhead_hp_bar_height
+	)
+	
+	# Create a timer that hides the HP bar after combat.
+	overhead_hp_bar_timer = Timer.new()
+	overhead_hp_bar_timer.one_shot = true
+	overhead_hp_bar_timer.wait_time = 2.0
+	overhead_hp_bar_timer.timeout.connect(_on_overhead_hp_bar_timeout)
+	add_child(overhead_hp_bar_timer)
+
+	# Get the ClickArea collision shape.
+	var collision_shape := click_area.get_node(
+		"CollisionShape2D"
+	) as CollisionShape2D
+
+	var rectangle_shape := collision_shape.shape as RectangleShape2D
+
+	# Get the unit's symmetry axis in UI local coordinates.
+	var unit_center := ui.to_local(global_position)
+
+	# Find the top-center point of the ClickArea in UI coordinates.
+	var shape_top_global := collision_shape.to_global(
+		Vector2(0.0, -rectangle_shape.size.y * 0.5)
+	)
+	var shape_top_ui := ui.to_local(shape_top_global)
+
+	# Account for the HP bar's own scale when centering it.
+	var displayed_bar_width: float = overhead_hp_bar.size.x * abs(overhead_hp_bar.scale.x)
+	var displayed_bar_height: float = overhead_hp_bar.size.y * abs(overhead_hp_bar.scale.y)
+
+	# Center the bar on the unit's symmetry axis.
+	overhead_hp_bar.position = Vector2(
+		unit_center.x - displayed_bar_width * 0.5,
+		shape_top_ui.y - displayed_bar_height - overhead_hp_bar_spacing + 7.0
+	)
+
+
+# Show the overhead HP bar and animate it to the current HP.
+func update_overhead_hp_bar() -> void:
+	if overhead_hp_bar == null:
+		return
+
+	overhead_hp_bar.show()
+	overhead_hp_bar.max_value = max_hp
+
+	# Stop the previous animation if it is still running.
+	if overhead_hp_tween != null and overhead_hp_tween.is_running():
+		overhead_hp_tween.kill()
+
+	# Animate the bar toward the current HP.
+	overhead_hp_tween = create_tween()
+	overhead_hp_tween.tween_property(
+		overhead_hp_bar,
+		"value",
+		current_hp,
+		0.25
+	)
+
+	# Restart the hide timer after each hit.
+	overhead_hp_bar_timer.start()
+
+
+# Hide the overhead HP bar after the timer expires.
+func _on_overhead_hp_bar_timeout() -> void:
+	if overhead_hp_bar != null:
+		overhead_hp_bar.hide()
+
 func initialize(grid: GridData, start_position: Vector2i) -> void:
 	grid_data = grid
 	set_map_position(start_position)
@@ -399,6 +542,12 @@ func take_damage(amount: int) -> bool:
 
 	current_hp -= amount
 	current_hp = max(current_hp, 0)
+
+	# Notify listeners that the unit's HP has changed.
+	hp_changed.emit(current_hp, max_hp)
+	
+	# Update the overhead HP bar after taking damage.
+	update_overhead_hp_bar()
 
 	print(unit_name, " HP: ", current_hp)
 

@@ -18,7 +18,7 @@ var current_map_position: Vector2i = Vector2i(-999999, -999999)
 @onready var pathfinding: Pathfinding = $Managers/Pathfinding
 @onready var attack_system: AttackSystem = $Managers/AttackSystem
 
-@onready var unit_info_panel: Control = $UI/UnitInfoPanel
+@onready var unit_info_panel: UnitInfoPanel = $UI/UnitInfoPanel
 @onready var end_turn_button: Button = $UI/EndTurnButton
 
 @onready var action_panel: Control = $UI/ActionPanel
@@ -85,6 +85,23 @@ var is_unit_moving: bool = false
 # Whether the action menu is opening.
 var is_action_menu_open: bool = false
 
+# Connect the signals used by a unit during battle.
+func connect_unit_signals(unit: Unit) -> void:
+	unit.clicked.connect(_on_unit_clicked)
+	unit.hp_changed.connect(_on_unit_hp_changed.bind(unit))
+
+# Show the unit that has just taken damage.
+func _on_unit_hp_changed(
+	_current_hp: int,
+	_max_hp: int,
+	unit: Unit
+) -> void:
+	# The current panel will update itself through its existing signal connection.
+	if unit_info_panel.current_unit == unit:
+		return
+
+	# Switch the information panel to the damaged unit.
+	unit_info_panel.show_unit(unit)
 
 # ------------------------------------------------------------------
 # Hero Creation
@@ -114,7 +131,7 @@ func create_knight(start_position: Vector2i) -> Hero:
 	heroes.append(knight)
 		
 	# Listen for click events.
-	knight.clicked.connect(_on_unit_clicked)
+	connect_unit_signals(knight)
 	return knight
 
 
@@ -141,7 +158,7 @@ func create_spear_warrior(start_position: Vector2i) -> Hero:
 	heroes.append(spear_warrior)
 		
 	# Listen for click events.
-	spear_warrior.clicked.connect(_on_unit_clicked)
+	connect_unit_signals(spear_warrior)
 	return spear_warrior
 
 
@@ -168,7 +185,7 @@ func create_hellfire_rhino(start_position: Vector2i) -> Hero:
 	heroes.append(hellfire_rhino)
 		
 	# Listen for click events.
-	hellfire_rhino.clicked.connect(_on_unit_clicked)
+	connect_unit_signals(hellfire_rhino)
 	return hellfire_rhino
 
 
@@ -198,7 +215,7 @@ func create_goblin(start_position: Vector2i) -> Goblin:
 	enemies.append(goblin)
 	
 	# Listen for Goblin clicks.
-	goblin.clicked.connect(_on_unit_clicked)
+	connect_unit_signals(goblin)
 
 	# Face left toward the heroes.
 	goblin.visual_root.scale.x = -abs(goblin.visual_root.scale.x)
