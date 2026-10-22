@@ -6,6 +6,7 @@ var health = 20
 var sprite
 var dashing = false
 var dash_position : Vector2 = Vector2(-999, -999)
+var prev_dis
 @export var area_1 : Area2D
 @export var speed = 300
 @onready var dash_cooldown = $DashTimer
@@ -53,6 +54,7 @@ func _on_area_2d_area_entered(area: Area2D) -> void:
 		health -= 1
 	
 func _physics_process(_delta: float) -> void:
+
 	if dash_cooldown.is_stopped() and !dashing:
 		dashing = true
 		speed = 1500
@@ -70,8 +72,11 @@ func _physics_process(_delta: float) -> void:
 		
 	if dashing:
 
+
 		if global_position.distance_to(dash_position) < 50 \
-			or global_position.x < 1110 or global_position.x > 5176:
+			or global_position.x < 1110 or global_position.x > 5176 \
+			or prev_dis <= abs(global_position.x - dash_position.x):
+
 			dashing = false
 			speed = 300
 			dash_cooldown.start()
@@ -89,7 +94,7 @@ func _physics_process(_delta: float) -> void:
 	else:
 		sprite.flip_h = true
 	move_and_slide()
-	
+	prev_dis = abs(global_position.x - dash_position.x)
 	
 
 func shoot_spikeball():

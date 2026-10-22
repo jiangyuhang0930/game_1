@@ -8,6 +8,7 @@
 [ext_resource type="Texture2D" uid="uid://05k7y4qmv070" path="res://Art/FG/enviornment/ceiling.png" id="6_0kkg6"]
 [ext_resource type="Texture2D" uid="uid://4pe40xbgo5ey" path="res://Art/FG/enviornment/door_t.png" id="7_7ktsu"]
 [ext_resource type="Texture2D" uid="uid://cxx7n23u0ir4n" path="res://Art/FG/enviornment/torch.png" id="8_7ktsu"]
+[ext_resource type="AudioStream" uid="uid://blk80yx7fm5ic" path="res://Sound/MEGALOVANIA.mp3" id="9_jkxju"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ial8x"]
 size = Vector2(6047.25, 513.5)
@@ -21,6 +22,11 @@ size = Vector2(11112, 385)
 position = Vector2(1934, 389)
 collision_layer = 1
 collision_mask = 1
+
+[node name="AudioStreamPlayer2D" type="AudioStreamPlayer2D" parent="Knight" unique_id=1355182747]
+stream = ExtResource("9_jkxju")
+volume_db = 2.633
+autoplay = true
 
 [node name="Pillar" type="RigidBody2D" parent="." unique_id=1293693734 groups=["boundary"]]
 position = Vector2(1145, 409)
