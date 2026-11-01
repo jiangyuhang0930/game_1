@@ -156,3 +156,9 @@ func update_hearts_container():
 			hearts_list[i].visible = true
 		else:
 			hearts_list[i].visible = false
+			
+func take_damage():
+	apply_knockback(melee_recoil_force * 0.75)
+	health -= 1
+	slow_down_time()
+	update_hearts_container()

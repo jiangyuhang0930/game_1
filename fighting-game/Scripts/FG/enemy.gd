@@ -10,11 +10,14 @@ var prev_dis
 @export var area_1 : Area2D
 @export var speed = 300
 @onready var dash_cooldown = $DashTimer
+@onready var dash_stop_timer = $DashStopTimer
 @onready var spikeball_cooldown = $SpikeballTimer
+@onready var hit_sound = $AudioStreamPlayer2D
 var instance
 func _ready() -> void:
 	sprite = $Sprite2D
 	player = get_tree().get_first_node_in_group("player")
+	dash_stop_timer.paused = true
 	
 
 
@@ -25,7 +28,7 @@ func _process(_delta):
 			instance.queue_free()
 		shoot_spikeball()
 		spikeball_cooldown.start()
-
+		
 	if health == 0:
 		queue_free()
 	var touching_objects = area_1.get_overlapping_bodies()
@@ -34,16 +37,15 @@ func _process(_delta):
 			dashing = false
 			speed = 300
 			dash_cooldown.start()
+			dash_stop_timer.start()
+			dash_stop_timer.paused = true
 
 			if position.x - 50 > player.position.x:
 				player.knockback_direction = 'left'
 			else:
 				player.knockback_direction = 'right'
 			if not player.invinsible:
-				player.apply_knockback(player.melee_recoil_force * 0.75)
-				player.health -= 1
-				player.slow_down_time()
-				player.update_hearts_container()
+				player.take_damage()
 
 
 
@@ -52,12 +54,15 @@ func _on_area_2d_area_entered(area: Area2D) -> void:
 	if area.is_in_group("slash"):
 		player.apply_knockback(player.melee_recoil_force)
 		health -= 1
+		if !hit_sound.playing:
+			hit_sound.play()
 	
 func _physics_process(_delta: float) -> void:
 
 	if dash_cooldown.is_stopped() and !dashing:
 		dashing = true
 		speed = 1500
+		dash_stop_timer.paused = false
 		
 		if global_position.x < player.global_position.x:
 			dash_position = player.global_position + Vector2(350, 0)
@@ -75,11 +80,13 @@ func _physics_process(_delta: float) -> void:
 
 		if global_position.distance_to(dash_position) < 50 \
 			or global_position.x < 1110 or global_position.x > 5176 \
-			or prev_dis <= abs(global_position.x - dash_position.x):
+			or dash_stop_timer.is_stopped():
 
 			dashing = false
 			speed = 300
 			dash_cooldown.start()
+			dash_stop_timer.start()
+			dash_stop_timer.paused = true
 		else:
 			move_and_slide()
 			return

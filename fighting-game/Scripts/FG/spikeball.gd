@@ -16,10 +16,7 @@ func _on_area_2d_body_entered(body: Node2D) -> void:
 		queue_free()
 		
 		if not player.invinsible:
-			player.apply_knockback(player.melee_recoil_force * 0.75)
-			player.health -= 1
-			player.slow_down_time()
-			player.update_hearts_container()
+			player.take_damage()
 
 
 func _on_area_2d_area_entered(area: Area2D) -> void:
