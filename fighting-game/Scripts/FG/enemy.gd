@@ -7,13 +7,14 @@ var sprite
 var dashing = false
 var dash_position : Vector2 = Vector2(-999, -999)
 var prev_dis
+var shielded = false
 @export var area_1 : Area2D
 @export var speed = 300
 @onready var dash_cooldown = $DashTimer
 @onready var dash_stop_timer = $DashStopTimer
 @onready var spikeball_cooldown = $SpikeballTimer
 @onready var hit_sound = $AudioStreamPlayer2D
-var instance
+
 func _ready() -> void:
 	sprite = $Sprite2D
 	player = get_tree().get_first_node_in_group("player")
@@ -24,8 +25,8 @@ func _ready() -> void:
 
 func _process(_delta):
 	if spikeball_cooldown.is_stopped():
-		if instance != null:
-			instance.queue_free()
+		#if instance != null:
+			#instance.queue_free()
 		shoot_spikeball()
 		spikeball_cooldown.start()
 		
@@ -51,9 +52,11 @@ func _process(_delta):
 
 func _on_area_2d_area_entered(area: Area2D) -> void:
 
-	if area.is_in_group("slash"):
+	if area.is_in_group("slash") and !shielded:
 		player.apply_knockback(player.melee_recoil_force)
 		health -= 1
+		if health == 10:
+			shielded = true
 		if !hit_sound.playing:
 			hit_sound.play()
 	
@@ -106,7 +109,7 @@ func _physics_process(_delta: float) -> void:
 
 func shoot_spikeball():
 
-	instance = spikeball.instantiate()
+	var instance = spikeball.instantiate()
 	get_tree().current_scene.add_child(instance)
 	var random_int = randi_range(800, 2500)
 	var r_sign : int

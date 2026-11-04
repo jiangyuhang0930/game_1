@@ -12,6 +12,7 @@ class_name PlayerController
 @export var melee_recoil_force: float = 4000.0
 @onready var dash_cooldown = $Cooldowns/DashCooldown
 @onready var dash_i_cooldown = $Cooldowns/DashICooldown
+@onready var got_hit_sound = $got_hit_sound
 var speed_multiplier = 30.0
 var jump_multiplier = -30.0
 var direction = 0
@@ -162,3 +163,4 @@ func take_damage():
 	health -= 1
 	slow_down_time()
 	update_hearts_container()
+	got_hit_sound.play()
