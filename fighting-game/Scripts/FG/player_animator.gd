@@ -26,6 +26,7 @@ func _process(delta):
 		await animation_player.animation_finished
 		player_controller.is_attacking = false
 		player_controller.curr_sword_slash.visible = false
+		player_controller.attack_object_hit = []
 		player_controller.curr_sword_slash.process_mode = Node.PROCESS_MODE_DISABLED
 		
 			#await animation_player.animation_finished

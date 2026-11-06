@@ -32,6 +32,7 @@
 [ext_resource type="Texture2D" uid="uid://f2c5y1fq8nki" path="res://Art/FG/Knight/heart/Heart_Fill.png" id="26_6rwnm"]
 [ext_resource type="Texture2D" uid="uid://b3t7iwxjpl4" path="res://Art/FG/Knight/heart/Heart_Container.png" id="27_j2gsv"]
 [ext_resource type="AudioStream" uid="uid://cfdpxf32glv7s" path="res://Sound/undertale-attack-hit-sound-effect.mp3" id="32_itpjj"]
+[ext_resource type="AudioStream" uid="uid://be2c2cc5ewbc" path="res://Sound/metal-hit-2.mp3" id="33_7q8vp"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_tai8l"]
 size = Vector2(121, 151)
@@ -449,3 +450,6 @@ one_shot = true
 
 [node name="got_hit_sound" type="AudioStreamPlayer2D" parent="." unique_id=1182964309]
 stream = ExtResource("32_itpjj")
+
+[node name="got_hit_sound_metal" type="AudioStreamPlayer2D" parent="." unique_id=1004725866]
+stream = ExtResource("33_7q8vp")

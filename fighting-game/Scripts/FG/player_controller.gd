@@ -13,6 +13,7 @@ class_name PlayerController
 @onready var dash_cooldown = $Cooldowns/DashCooldown
 @onready var dash_i_cooldown = $Cooldowns/DashICooldown
 @onready var got_hit_sound = $got_hit_sound
+@onready var got_hit_sound_metal = $got_hit_sound_metal
 var speed_multiplier = 30.0
 var jump_multiplier = -30.0
 var direction = 0
@@ -27,6 +28,8 @@ var grounded = false
 var invinsible = false
 var hurt = false
 var is_dashing = false
+var big_hit = false
+var attack_object_hit = []
 
 var hearts_list : Array[TextureRect]
 
@@ -163,4 +166,4 @@ func take_damage():
 	health -= 1
 	slow_down_time()
 	update_hearts_container()
-	got_hit_sound.play()
+	got_hit_sound_metal.play()

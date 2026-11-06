@@ -14,6 +14,7 @@ var shielded = false
 @onready var dash_stop_timer = $DashStopTimer
 @onready var spikeball_cooldown = $SpikeballTimer
 @onready var hit_sound = $AudioStreamPlayer2D
+@onready var shield_sprite = $shield
 
 func _ready() -> void:
 	sprite = $Sprite2D
@@ -55,8 +56,9 @@ func _on_area_2d_area_entered(area: Area2D) -> void:
 	if area.is_in_group("slash") and !shielded:
 		player.apply_knockback(player.melee_recoil_force)
 		health -= 1
+
 		if health == 10:
-			shielded = true
+			shielding()
 		if !hit_sound.playing:
 			hit_sound.play()
 	
@@ -120,6 +122,9 @@ func shoot_spikeball():
 	instance.global_position = global_position
 	instance.linear_velocity = Vector2((0 + random_int) * r_sign, -3000)
 
+func shielding():
+	shielded = true
+	shield_sprite.visible = true
 
 #func _on_area_2d_body_entered(body: Node2D) -> void:
 	#if body.name == 'Knight':

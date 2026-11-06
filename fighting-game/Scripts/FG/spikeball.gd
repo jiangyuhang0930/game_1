@@ -25,7 +25,8 @@ func _on_area_2d_area_entered(area: Area2D) -> void:
 		hp -= 1
 		if hp == 0:
 			queue_free()
-		
+			player.big_hit = true
+			
 		linear_velocity = Vector2(0, 0)
 		if player.position.x < position.x:
 			linear_velocity.x += 500
