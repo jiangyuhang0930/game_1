@@ -10,6 +10,7 @@ var prev_dis
 var shielded = false
 @export var area_1 : Area2D
 @export var speed = 300
+@onready var shield_sound = $shield_sound
 @onready var dash_cooldown = $DashTimer
 @onready var dash_stop_timer = $DashStopTimer
 @onready var spikeball_cooldown = $SpikeballTimer
@@ -47,20 +48,26 @@ func _process(_delta):
 			else:
 				player.knockback_direction = 'right'
 			if not player.invinsible:
-				player.take_damage()
+				player.take_damage("normal")
 
 
 
 func _on_area_2d_area_entered(area: Area2D) -> void:
 
 	if area.is_in_group("slash") and !shielded:
-		player.apply_knockback(player.melee_recoil_force)
-		health -= 1
+		if self not in player.attack_object_hit:
+			player.attack_object_hit.append(self)
+			
+			player.apply_knockback(player.melee_recoil_force)
+			health -= 1
 
-		if health == 10:
-			shielding()
-		if !hit_sound.playing:
-			hit_sound.play()
+			if health == 10:
+				shielding()
+			if !hit_sound.playing:
+				hit_sound.play()
+	elif area.is_in_group("slash") and shielded:
+		shield_sound.play()
+		
 	
 func _physics_process(_delta: float) -> void:
 

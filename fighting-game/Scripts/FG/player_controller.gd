@@ -161,9 +161,12 @@ func update_hearts_container():
 		else:
 			hearts_list[i].visible = false
 			
-func take_damage():
+func take_damage(sound : String):
 	apply_knockback(melee_recoil_force * 0.75)
 	health -= 1
 	slow_down_time()
 	update_hearts_container()
-	got_hit_sound_metal.play()
+	if sound == "metal":
+		got_hit_sound_metal.play()
+	else:
+		got_hit_sound.play()

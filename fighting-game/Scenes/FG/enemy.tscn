@@ -4,6 +4,7 @@
 [ext_resource type="Texture2D" uid="uid://dyb5kkmugvdnb" path="res://Art/FG/enemy/_Run.png" id="2_2685o"]
 [ext_resource type="AudioStream" uid="uid://dfy8rbifaxe7p" path="res://Sound/sword-hit.mp3" id="3_3ab2n"]
 [ext_resource type="Texture2D" uid="uid://dtkhnjlb6qlgs" path="res://Art/FG/enemy/shield.png" id="4_d2rol"]
+[ext_resource type="AudioStream" uid="uid://bib10xe0tn557" path="res://Sound/daviddumaisaudio-sword-slash-with-metal-shield-impact-185433.mp3" id="5_dvs21"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_byh2l"]
 size = Vector2(127.437485, 222)
@@ -125,5 +126,8 @@ texture_filter = 1
 position = Vector2(132.99998, 115.00001)
 scale = Vector2(9.6640625, 7.867188)
 texture = ExtResource("4_d2rol")
+
+[node name="shield_sound" type="AudioStreamPlayer2D" parent="CharacterBody2D" unique_id=1199123952]
+stream = ExtResource("5_dvs21")
 
 [connection signal="area_entered" from="CharacterBody2D/Area2D" to="CharacterBody2D" method="_on_area_2d_area_entered"]
